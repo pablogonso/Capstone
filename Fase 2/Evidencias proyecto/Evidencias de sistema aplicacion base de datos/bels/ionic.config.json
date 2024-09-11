@@ -1,0 +1,7 @@
+{
+  "name": "bels",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
