@@ -24,7 +24,7 @@ import { getVertexAI, provideVertexAI } from '@angular/fire/vertexai-preview';
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideFirebaseApp(() => initializeApp({"projectId":"proyecto-bels","appId":"1:695443213337:web:a6b636b9f5c7d35932ae88","storageBucket":"proyecto-bels.appspot.com","apiKey":"AIzaSyCcMqTF5cnI2-4GHXniTPZKdM0iTemFj-4","authDomain":"proyecto-bels.firebaseapp.com","messagingSenderId":"695443213337","measurementId":"G-KRPGPB8SWC"})), provideAuth(() => getAuth()), provideAnalytics(() => getAnalytics()), ScreenTrackingService, UserTrackingService, provideAppCheck(() => {
   // TODO get a reCAPTCHA Enterprise here https://console.cloud.google.com/security/recaptcha?project=_
-  const provider = new ReCaptchaEnterpriseProvider(/* reCAPTCHA Enterprise site key */);
+  const provider = new ReCaptchaEnterpriseProvider('6LeksVEqAAAAAF08o-5auMq6ETTBWTauaznhTHTF');
   return initializeAppCheck(undefined, { provider, isTokenAutoRefreshEnabled: true });
 }), provideFirestore(() => getFirestore()), provideDatabase(() => getDatabase()), provideFunctions(() => getFunctions()), provideMessaging(() => getMessaging()), providePerformance(() => getPerformance()), provideStorage(() => getStorage()), provideRemoteConfig(() => getRemoteConfig()), provideVertexAI(() => getVertexAI())],
   bootstrap: [AppComponent],
