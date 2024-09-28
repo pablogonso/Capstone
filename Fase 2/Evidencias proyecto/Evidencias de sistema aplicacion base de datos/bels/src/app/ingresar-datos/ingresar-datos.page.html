@@ -1,0 +1,50 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Registro de Usuario</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Formulario de Registro</ion-card-title>
+    </ion-card-header>
+    
+    <ion-card-content>
+      <form (ngSubmit)="onSubmit()" #userForm="ngForm">
+        
+        <ion-item>
+          <ion-label position="floating">Nombre</ion-label>
+          <ion-input type="text" [(ngModel)]="nombre" name="nombre" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Apellido</ion-label>
+          <ion-input type="text" [(ngModel)]="apellido" name="apellido" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Edad</ion-label>
+          <ion-input type="number" [(ngModel)]="edad" name="edad" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Correo Electrónico</ion-label>
+          <ion-input type="email" [(ngModel)]="correo" name="correo" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Contraseña</ion-label>
+          <ion-input type="password" [(ngModel)]="contrasena" name="contrasena" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Confirmar Contraseña</ion-label>
+          <ion-input type="password" [(ngModel)]="confirmarContrasena" name="confirmarContrasena" required></ion-input>
+        </ion-item>
+
+        <ion-button expand="full" type="submit" [disabled]="userForm.invalid">Registrar</ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
