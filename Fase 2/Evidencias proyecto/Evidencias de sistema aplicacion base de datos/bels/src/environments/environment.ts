@@ -12,7 +12,10 @@ export const environment = {
     messagingSenderId: "695443213337",
     appId: "1:695443213337:web:a6b636b9f5c7d35932ae88",
     measurementId: "G-KRPGPB8SWC"
-}
+},
+    gemini: {
+      API_KEY: "AIzaSyA4rFKXoDg1iOYJAf4Ce1MVhK4LIJ-BHXw"
+    }
 };
 
 /*
