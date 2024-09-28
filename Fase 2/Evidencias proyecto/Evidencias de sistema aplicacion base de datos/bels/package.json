@@ -27,8 +27,13 @@
     "@capacitor/haptics": "6.0.1",
     "@capacitor/keyboard": "6.0.2",
     "@capacitor/status-bar": "6.0.1",
+    "@google/generative-ai": "^0.20.0",
     "@ionic/angular": "^8.0.0",
+<<<<<<< HEAD
     "firebase": "^10.13.1",
+=======
+    "firebase": "^10.13.2",
+>>>>>>> 6cebdc6573c1d1625bdc82bcf9166a3a6773fb86
     "ionicons": "^7.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
