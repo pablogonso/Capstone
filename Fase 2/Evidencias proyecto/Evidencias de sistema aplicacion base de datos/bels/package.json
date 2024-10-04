@@ -19,9 +19,9 @@
     "@angular/core": "^18.0.0",
     "@angular/fire": "^18.0.1",
     "@angular/forms": "^18.0.0",
-    "@angular/platform-browser": "^18.0.0",
+    "@angular/platform-browser": "^18.2.6",
     "@angular/platform-browser-dynamic": "^18.0.0",
-    "@angular/router": "^18.0.0",
+    "@angular/router": "^18.2.6",
     "@capacitor/app": "6.0.1",
     "@capacitor/core": "6.1.2",
     "@capacitor/haptics": "6.0.1",
@@ -29,17 +29,14 @@
     "@capacitor/status-bar": "6.0.1",
     "@google/generative-ai": "^0.20.0",
     "@ionic/angular": "^8.0.0",
-<<<<<<< HEAD
     "firebase": "^10.13.1",
-=======
-    "firebase": "^10.13.2",
->>>>>>> 6cebdc6573c1d1625bdc82bcf9166a3a6773fb86
     "ionicons": "^7.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.2"
   },
   "devDependencies": {
+    
     "@angular-devkit/build-angular": "^18.2.4",
     "@angular-eslint/builder": "^18.0.0",
     "@angular-eslint/eslint-plugin": "^18.0.0",
