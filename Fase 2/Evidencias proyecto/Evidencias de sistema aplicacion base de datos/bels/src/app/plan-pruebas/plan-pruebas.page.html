@@ -1,0 +1,26 @@
+<!-- plan-pruebas.page.html -->
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Plan de Pruebas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-label position="floating">Inserta tu texto</ion-label>
+    <ion-input [(ngModel)]="userInput" placeholder="Escribe aquí..."></ion-input>
+  </ion-item>
+
+  <ion-button expand="full" (click)="onSubmit()">
+    Enviar a Gemini
+  </ion-button>
+
+  <ion-item>
+    <ion-label>Resultado:</ion-label>
+    <p>{{ result() }}</p>
+  </ion-item>
+</ion-content>
+
+  
+
+  

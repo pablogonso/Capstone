@@ -18,10 +18,15 @@ const routes: Routes = [
   {
     path: 'ingresar-datos',
     loadChildren: () => import('./ingresar-datos/ingresar-datos.module').then( m => m.IngresarDatosPageModule)
-  },  {
+  },
+  {
     path: 'cuenta-creada',
     loadChildren: () => import('./cuenta-creada/cuenta-creada.module').then( m => m.CuentaCreadaPageModule)
   },
+  {
+    path: 'plan-pruebas',
+    loadChildren: () => import('./plan-pruebas/plan-pruebas.module').then( m => m.PlanPruebasPageModule)
+  }
 
 
 ];
