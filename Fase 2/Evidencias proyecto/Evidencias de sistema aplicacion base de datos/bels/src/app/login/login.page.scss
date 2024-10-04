@@ -1,0 +1,28 @@
+/* login.page.scss */
+ion-card {
+  margin: 20px; /* Espaciado alrededor de la tarjeta */
+  border-radius: 10px; /* Bordes redondeados */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Sombra suave */
+}
+
+ion-card-header {
+  background-color: #f8f8f8; /* Color de fondo para el encabezado de la tarjeta */
+}
+
+ion-card-title {
+  font-size: 24px; /* Tamaño de fuente para el título */
+  font-weight: bold; /* Negrita para el título */
+}
+
+ion-card-content p {
+  margin-bottom: 15px; /* Espaciado debajo del párrafo */
+}
+
+ion-button {
+  background-color: #3880ff; /* Color del botón */
+  color: white; /* Color del texto del botón */
+}
+
+ion-button:hover {
+  background-color: #3171e0; /* Color del botón al pasar el mouse */
+}

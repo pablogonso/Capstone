@@ -9,7 +9,7 @@ const generationConfig = {
   topK: 64,
   maxOutputTokens: 100,
   responseMimeType: "text/plain"
-}
+};
 
 const model = googleGenAI.getGenerativeModel({
   model: 'gemini-1.5-flash',
@@ -32,7 +32,8 @@ export class PlanPruebasPage implements OnInit {
 
   async onSubmit() {
     if (this.userInput) {
-      await this.TestGemini(this.userInput);
+      const inputInSpanish = `Por favor, responde en español: ${this.userInput}`;
+      await this.TestGemini(inputInSpanish);
     } else {
       this.result.set("Por favor ingresa un texto.");
     }

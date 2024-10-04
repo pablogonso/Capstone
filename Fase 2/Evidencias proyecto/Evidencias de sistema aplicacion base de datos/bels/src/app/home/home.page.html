@@ -1,20 +1,23 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Blank
+      Welcome
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Vista de bienvenida</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div id="container">
-    <strong>Bienvenido al test bels</strong><br>
-    <ion-button routerLink="/login">Continuar</ion-button>
-  </div>
+<ion-content>
+  <ion-card>
+    <img src="assets/bels-avatar.png" alt="Descripción de la imagen" />
+    <ion-card-header>
+      <ion-card-title>Bienvenido al Test BELS</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <strong class="large-text">
+        Aplicación en la cual podrás generar un plan de trabajo en base a los resultados del test
+      </strong>
+      <br>
+      <ion-button expand="full" routerLink="/login">Continuar</ion-button>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
