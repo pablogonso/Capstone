@@ -26,7 +26,11 @@ const routes: Routes = [
   {
     path: 'plan-pruebas',
     loadChildren: () => import('./plan-pruebas/plan-pruebas.module').then( m => m.PlanPruebasPageModule)
+  },  {
+    path: 'plan-pruebas-langchain',
+    loadChildren: () => import('./plan-pruebas-langchain/plan-pruebas-langchain.module').then( m => m.PlanPruebasLangchainPageModule)
   }
+
 
 
 ];
