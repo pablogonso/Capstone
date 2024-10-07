@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Realizar Test BELS</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngIf="preguntas.length > 0">
+    <ion-item *ngFor="let pregunta of preguntas">
+      <ion-label>
+        <h2>{{ pregunta.pregunta }}</h2>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-text *ngIf="preguntas.length === 0">
+    No se encontraron preguntas.
+  </ion-text>
+</ion-content>

@@ -26,7 +26,23 @@ const routes: Routes = [
   {
     path: 'plan-pruebas',
     loadChildren: () => import('./plan-pruebas/plan-pruebas.module').then( m => m.PlanPruebasPageModule)
+  },  {
+    path: 'pag-bienvenida',
+    loadChildren: () => import('./pag-bienvenida/pag-bienvenida.module').then( m => m.PagBienvenidaPageModule)
+  },
+  {
+    path: 'realizar-test',
+    loadChildren: () => import('./realizar-test/realizar-test.module').then( m => m.RealizarTestPageModule)
+  },
+  {
+    path: 'ver-resultados',
+    loadChildren: () => import('./ver-resultados/ver-resultados.module').then( m => m.VerResultadosPageModule)
+  },
+  {
+    path: 'plan-de-trabajo',
+    loadChildren: () => import('./plan-de-trabajo/plan-de-trabajo.module').then( m => m.PlanDeTrabajoPageModule)
   }
+
 
 
 ];
