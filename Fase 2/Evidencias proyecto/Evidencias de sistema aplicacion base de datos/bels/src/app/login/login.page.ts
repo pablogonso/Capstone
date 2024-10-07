@@ -16,6 +16,10 @@ export class LoginPage {
     this.router.navigate(['/ingresar-datos']);
   }
   
+  irApagebienvenida(){
+    this.router.navigate(['/pag-bienvenida'])
+  }
+  
   onSubmit() {
     console.log('Email:', this.email);
     console.log('Contraseña:', this.password);
