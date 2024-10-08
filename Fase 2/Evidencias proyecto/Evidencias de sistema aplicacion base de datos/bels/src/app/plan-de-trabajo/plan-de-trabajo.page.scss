@@ -1,0 +1,24 @@
+ion-card{
+
+    border-radius: 15px;
+    padding: 10px;
+    min-height: 200px;
+
+
+}
+
+ion-card:hover{
+
+    cursor: pointer;
+    background: var(--ioncolor-light);
+    
+}
+
+.titulo{
+
+    font-size: 18px;
+    font-weight: bold;
+    padding-top: 10px;
+
+
+}

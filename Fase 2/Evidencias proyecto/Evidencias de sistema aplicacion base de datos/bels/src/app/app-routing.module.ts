@@ -41,6 +41,10 @@ const routes: Routes = [
   {
     path: 'plan-de-trabajo',
     loadChildren: () => import('./plan-de-trabajo/plan-de-trabajo.module').then( m => m.PlanDeTrabajoPageModule)
+  },
+  {
+    path: 'actividades',
+    loadChildren: () => import('./actividades/actividades.module').then( m => m.ActividadesPageModule)
   }
 
 

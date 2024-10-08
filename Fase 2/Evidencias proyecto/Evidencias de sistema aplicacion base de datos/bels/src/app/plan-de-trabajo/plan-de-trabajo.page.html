@@ -1,13 +1,48 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>plan-de-trabajo</ion-title>
-  </ion-toolbar>
-</ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">plan-de-trabajo</ion-title>
-    </ion-toolbar>
-  </ion-header>
-</ion-content>
+  <ion-content>    
+
+      <div class="content">
+
+        <ion-grid>
+          <ion-row>
+            <ion-col *ngFor="let categoria of categorias" size-lg="6" size-md="6" size-sm="12" size-sm ="12" >
+
+              <ion-card>
+
+                <circle-progress
+                [percent]="obtenerPorcentaje(categoria)"
+                [radius]="100"
+                [outerStrokeWidth]="16"
+                [innerStrokeWidth]="8"
+                [outerStrokeColor]="'#78C000'"
+                [innerStrokeColor]="'#C7E596'"
+                [animation]="true"
+                [animationDuration]="300"
+                [subtitle]="'Progreso'"
+              ></circle-progress>
+
+                <div class="titulo">{{categoria.titulo}}</div>
+                <p> {{categoria.descripcion | slice:0:85}}...</p>
+
+                <div class="ion-text-center">
+
+                  <ion-button (click)="verTarea()" size="small">
+                    Ver tareas                    
+                    <ion-icon slot="end" name="eye-outline"></ion-icon>
+                  </ion-button>
+
+               </div>
+          
+
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        
+
+        </ion-grid>
+
+
+      </div>
+
+    
+  </ion-content>
