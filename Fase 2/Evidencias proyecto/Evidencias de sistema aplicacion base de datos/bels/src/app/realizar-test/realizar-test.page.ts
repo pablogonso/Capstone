@@ -8,6 +8,7 @@ import { BelsService } from '../services/question.service'; // Asegúrate de que
 })
 export class RealizarTestPage implements OnInit {
   preguntas: any[] = [];
+  indiceActual: number = 0;  // Controla la pregunta actual
 
   constructor(private belsService: BelsService) { }
 
@@ -17,5 +18,27 @@ export class RealizarTestPage implements OnInit {
       console.log('Preguntas obtenidas:', data); // Verificar si los datos llegan
       this.preguntas = data;
     });
+  }
+
+  // Función para pasar a la siguiente pregunta
+  siguiente() {
+    if (this.indiceActual < this.preguntas.length - 1) {
+      this.indiceActual++;
+    }
+  }
+
+  // Función para regresar a la pregunta anterior
+  anterior() {
+    if (this.indiceActual > 0) {
+      this.indiceActual--;
+    }
+  }
+
+  // Función para procesar el envío del formulario
+  enviarFormulario() {
+    console.log('Respuestas enviadas:', this.preguntas);
+
+    // Aquí puedes agregar lógica para almacenar las respuestas y los valores en Firebase
+    // Por ejemplo, podrías actualizar el campo `valor` en cada pregunta en Firestore
   }
 }

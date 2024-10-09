@@ -1,0 +1,17 @@
+.horizontal-radio-group {
+    display: flex;
+    justify-content: space-around; /* Espacio uniforme entre los botones */
+    align-items: center; /* Alinear los botones y los valores verticalmente */
+    width: 100%;
+  }
+  
+  .radio-item {
+    display: flex;
+    flex-direction: column; /* Colocar los botones y los valores en columna */
+    align-items: center; /* Centrar tanto el botón como el valor */
+  }
+  
+  .below-radio {
+    margin-top: 5px; /* Espacio entre el botón de radio y el valor */
+  }
+  
