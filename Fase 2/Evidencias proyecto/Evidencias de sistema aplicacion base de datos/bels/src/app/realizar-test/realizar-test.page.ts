@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BelsService } from '../services/question.service'; // Asegúrate de que la ruta es correcta
+import { AngularFirestore } from '@angular/fire/compat/firestore'; // Importar AngularFirestore para trabajar con Firebase
 
 @Component({
   selector: 'app-realizar-test',
@@ -10,12 +11,11 @@ export class RealizarTestPage implements OnInit {
   preguntas: any[] = [];
   indiceActual: number = 0;  // Controla la pregunta actual
 
-  constructor(private belsService: BelsService) { }
+  constructor(private belsService: BelsService, private firestore: AngularFirestore) { }
 
   ngOnInit() {
     // Llamar al servicio para obtener las preguntas cuando se cargue el componente
     this.belsService.getPreguntas().subscribe(data => {
-      console.log('Preguntas obtenidas:', data); // Verificar si los datos llegan
       this.preguntas = data;
     });
   }
@@ -34,11 +34,28 @@ export class RealizarTestPage implements OnInit {
     }
   }
 
+  // Función para activar el estado cuando el usuario selecciona un valor
+  actualizarEstado(indice: number) {
+    this.preguntas[indice].estado = true;
+  }
+
   // Función para procesar el envío del formulario
   enviarFormulario() {
-    console.log('Respuestas enviadas:', this.preguntas);
+    // Crear un array con las respuestas del usuario
+    const respuestasArray = this.preguntas.map(pregunta => ({
+      pregunta: pregunta.pregunta,
+      valor: pregunta.valor,
+      estado: pregunta.estado
+    }));
 
-    // Aquí puedes agregar lógica para almacenar las respuestas y los valores en Firebase
-    // Por ejemplo, podrías actualizar el campo `valor` en cada pregunta en Firestore
+    // Guardar las respuestas en la colección 'Respuestas' en Firebase
+    this.firestore.collection('Respuestas').add({ respuestas: respuestasArray })
+      .then((docRef) => {
+        console.log(`Respuestas enviadas correctamente con ID generado: ${docRef.id}`);
+        // Aquí puedes agregar un mensaje de éxito o redirigir al usuario
+      })
+      .catch(error => {
+        console.error('Error al enviar las respuestas: ', error);
+      });
   }
 }

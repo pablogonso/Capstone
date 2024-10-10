@@ -12,11 +12,8 @@
       </ion-card-header>
 
       <ion-card-content>
-        <!-- Usamos ion-toggle para marcar si se ha respondido "sí" o "no" a la pregunta -->
-        <ion-toggle [(ngModel)]="preguntas[indiceActual].estado" name="pregunta{{indiceActual}}" checkedLabel="Sí" uncheckedLabel="No"></ion-toggle>
-
         <!-- Grupo de radio en horizontal con valores debajo -->
-        <ion-radio-group [(ngModel)]="preguntas[indiceActual].valor" name="valor{{indiceActual}}">
+        <ion-radio-group [(ngModel)]="preguntas[indiceActual].valor" name="valor{{indiceActual}}" (ionChange)="actualizarEstado(indiceActual)">
           <div class="horizontal-radio-group">
             <div class="radio-item">
               <ion-radio slot="start" value="0"></ion-radio>
