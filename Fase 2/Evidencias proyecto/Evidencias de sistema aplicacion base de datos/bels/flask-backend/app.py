@@ -38,7 +38,7 @@ def generar_respuestas():
         app.logger.info(f"Datos recibidos: Pais: {pais}, Ciudad: {ciudad}, Puntajes: {puntajes}")
 
         # Cargar el archivo de preguntas
-        file_path = r'C:\Users\jobau\OneDrive - Fundacion Instituto Profesional Duoc UC\Escritorio\TestBelsLimpio.csv'  # Cambia la ruta del archivo según tu configuración
+        file_path = r'C:\Users\luisa\OneDrive\Escritorio\TestBelsLimpio.csv'  # Cambia la ruta del archivo según tu configuración
         preguntas_df = cargar_preguntas(file_path)
 
         # Verificar que se cargue correctamente el archivo CSV

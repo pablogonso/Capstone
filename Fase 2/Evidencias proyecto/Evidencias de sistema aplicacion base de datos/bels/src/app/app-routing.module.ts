@@ -25,6 +25,10 @@ const routes: Routes = [
     loadChildren: () => import('./cuenta-creada/cuenta-creada.module').then( m => m.CuentaCreadaPageModule)
   },
   {
+    path: 'plan-pruebas-langchain',
+    loadChildren: () => import('./plan-pruebas-langchain/plan-pruebas-langchain.module').then( m => m.PlanPruebasLangchainPageModule)
+  },
+  {
     path: 'plan-pruebas',
     loadChildren: () => import('./plan-pruebas/plan-pruebas.module').then( m => m.PlanPruebasPageModule),
     canActivate: [AuthGuard] // Protección con AuthGuard
