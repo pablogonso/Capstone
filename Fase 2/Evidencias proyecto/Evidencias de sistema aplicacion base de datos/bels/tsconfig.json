@@ -24,7 +24,7 @@
     ],
     "useDefineForClassFields": false,
     "typeRoots": ["node_modules/@types"],
-    "types": ["jest"]
+    "types": []
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
