@@ -41,8 +41,9 @@
     </ion-card>
 
     <!-- Botones de navegación -->
-    <ion-button expand="full" (click)="anterior()" [disabled]="indiceActual === 0">Anterior</ion-button>
+     
     <ion-button expand="full" (click)="siguiente()" [disabled]="indiceActual === preguntas.length - 1">Siguiente</ion-button>
+    <ion-button expand="full" (click)="anterior()" [disabled]="indiceActual === 0">Anterior</ion-button>
 
     <!-- Mostrar botón de enviar solo en la última pregunta -->
     <ion-button expand="full" type="submit" *ngIf="indiceActual === preguntas.length - 1">Enviar Respuestas</ion-button>

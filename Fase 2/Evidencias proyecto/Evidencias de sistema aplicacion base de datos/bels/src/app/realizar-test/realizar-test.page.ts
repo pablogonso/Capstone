@@ -45,7 +45,8 @@ export class RealizarTestPage implements OnInit {
     const respuestasArray = this.preguntas.map(pregunta => ({
       pregunta: pregunta.pregunta,
       valor: pregunta.valor,
-      estado: pregunta.estado
+      estado: pregunta.estado,
+      grupo: pregunta.Grupo
     }));
 
     // Guardar las respuestas en la colección 'Respuestas' en Firebase

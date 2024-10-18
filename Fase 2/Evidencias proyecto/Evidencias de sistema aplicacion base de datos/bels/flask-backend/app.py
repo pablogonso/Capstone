@@ -1,11 +1,13 @@
+# backend/app.py
+
 from flask import Flask, request, jsonify
 from langchain_community.chat_models import ChatOpenAI
-from langchain.prompts import PromptTemplate
 from langchain.schema import HumanMessage, SystemMessage
 from flask_cors import CORS
 import os
-import pandas as pd
 from dotenv import load_dotenv
+import firebase_admin
+from firebase_admin import credentials, firestore
 
 # Cargar las variables de entorno desde .env
 load_dotenv()
@@ -16,27 +18,12 @@ model_id = "ft:gpt-4o-2024-08-06:personal:myexperimentsimplified:AGatb20a"
 llm = ChatOpenAI(openai_api_key=api_key, model_name=model_id, max_tokens=150)
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}}, methods=["GET", "POST", "OPTIONS"])
 
-# Función para cargar el archivo CSV como DataFrame
-def cargar_preguntas(file_path):
-    df = pd.read_csv(file_path, sep=';', encoding='utf-8')
-    return df
-
-# Función para limpiar y acortar el texto
-def limpiar_texto(texto, limite=300):
-    """Elimina asteriscos, repeticiones y acorta el texto si excede el límite."""
-    # Eliminar asteriscos
-    texto_limpio = texto.replace('*', '')
-
-    # Eliminar redundancias como "Recomendación:"
-    texto_limpio = texto_limpio.replace('Recomendación:', '').strip()
-
-    # Acortar el texto si excede el límite
-    if len(texto_limpio) > limite:
-        texto_limpio = texto_limpio[:limite] + '...'
-
-    return texto_limpio
+# Configurar Firebase
+cred = credentials.Certificate(r"C:\Capstone\Fase 2\Evidencias proyecto\Evidencias de sistema aplicacion base de datos\bels\src\proyecto-bels-firebase-adminsdk-pfhrt-092bf431c1.json")
+firebase_admin.initialize_app(cred)
+db = firestore.client()
 
 @app.route('/api/generar-respuestas', methods=['POST'])
 def generar_respuestas():
@@ -45,53 +32,108 @@ def generar_respuestas():
         data = request.json
         pais = data.get('pais')
         ciudad = data.get('ciudad')
-        puntajes = data.get('puntajes', {})
+        documento_id = data.get('documentoId')
 
-        # Cargar el archivo de preguntas
-        file_path = r'C:\Users\luisa\OneDrive\Escritorio\TestBelsLimpio.csv'
-        preguntas_df = cargar_preguntas(file_path)
+        if not documento_id:
+            return jsonify({"error": "No se proporcionó la ID del documento"}), 400
 
-        respuestas = []
+        # Intentar obtener el documento específico desde la colección "Respuestas"
+        try:
+            doc_ref = db.collection('Respuestas').document(documento_id)
+            doc = doc_ref.get()
 
-        # Iterar sobre los grupos de preguntas
-        for grupo, puntajes_grupo in puntajes.items():
-            preguntas_grupo = preguntas_df[preguntas_df['Grupo'] == grupo]
-            puntaje_total = sum(puntajes_grupo)
+            if not doc.exists:
+                return jsonify({"error": "Documento no encontrado"}), 404
 
-            # Prompt claro para la IA
-            prompt = f"""
-            Grupo: {grupo}
-            Puntaje total de sus preguntas: {puntaje_total}/{len(puntajes_grupo) * 4}.
-            Proporciona una recomendación breve, práctica y directa.
-            No uses la palabra 'Recomendación' y no repitas el nombre del grupo.
-            Usa ejemplos de recursos específicos en {ciudad}, {pais}.
-            """
+            # Obtener los datos del documento
+            respuestas_firebase = doc.to_dict()
+            app.logger.info(f"Respuestas obtenidas de Firebase: {respuestas_firebase}")
 
-            messages = [
-                SystemMessage(content="Eres un psicólogo experto en habilidades diarias."),
-                HumanMessage(content=prompt)
-            ]
+        except Exception as e:
+            return jsonify({"error": f"Error al obtener el documento desde Firebase: {str(e)}"}), 500
 
-            response = llm(messages)
-            respuesta_ia = response.content.strip()
+        # Registro adicional para ver la estructura de la respuesta antes de devolverla
+        app.logger.info(f"Estructura de la respuesta que se devolverá: {respuestas_firebase}")
 
-            # Limpiar y acortar la respuesta
-            respuesta_formateada = limpiar_texto(respuesta_ia)
-
-            # Almacenar la recomendación
-            respuestas.append({
-                "grupo": grupo,
-                "puntaje_total": puntaje_total,
-                "recomendacion": respuesta_formateada
-            })
-
-        # Devolver las recomendaciones agrupadas por grupo
-        return jsonify({"recomendaciones": respuestas})
+        # Devolver las recomendaciones o el contenido que necesites
+        return jsonify({"respuestas": respuestas_firebase.get('respuestas', [])})
 
     except Exception as e:
         app.logger.error(f"Error en la generación de respuestas: {str(e)}")
         return jsonify({"error": f"Ha ocurrido un error: {str(e)}"}), 500
 
-# Ejecutar la aplicación Flask
+# Ruta para manejar las solicitudes de predicción
+@app.route('/api/predict', methods=['POST', 'OPTIONS'])
+def predict():
+    if request.method == 'OPTIONS':
+        # Manejo de la solicitud OPTIONS
+        response = app.make_response('')
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        return response
+
+    try:
+        # Procesar la solicitud POST para realizar la predicción
+        data = request.json
+        puntajes_por_grupo = data.get('puntajes', {})
+        ciudad = data.get('ciudad')
+        pais = data.get('pais')
+
+        # Verificación para asegurar que los puntajes no estén vacíos
+        if not puntajes_por_grupo:
+            app.logger.error("Los puntajes están vacíos o no fueron proporcionados.")
+            return jsonify({"error": "Los puntajes no fueron proporcionados."}), 400
+
+        # Sumar los puntajes por grupo
+        suma_puntajes_por_grupo = {grupo: sum(puntajes) for grupo, puntajes in puntajes_por_grupo.items()}
+
+        # Crear un prompt específico para cada grupo y obtener recomendaciones para cada uno
+        recomendaciones = []
+        for grupo, puntaje_total in suma_puntajes_por_grupo.items():
+            # Crear el prompt para cada grupo
+            prompt = (
+                f"El grupo '{grupo}' tiene un puntaje total de {puntaje_total}. "
+                f"Realiza una recomendación para mejorar en este grupo. "
+                f"Si el puntaje es menor al 85% del puntaje máximo del grupo, la recomendación debe ser más impactante a medida que el puntaje baje.\n"
+                f"Los puntajes máximos por grupo son los siguientes: "
+                f"Autocuidado: 40, Habilidades Domésticas: 28, Habilidades Comunitarias: 16, Relaciones Sociales: 20."
+                f"La recomendación debe ser generada en este formato: Recomendación: texto_de_la_recomendación.\n"
+                f"Grupo: {grupo}, Puntaje Total: {puntaje_total}\n"
+                )
+
+
+
+            # Configurar el mensaje para el modelo de lenguaje
+            messages = [
+                SystemMessage(content="Eres un psicólogo experto en coaching motivacional y conducta humana."),
+                HumanMessage(content=prompt)
+            ]
+
+            # Obtener la respuesta del modelo para el grupo actual
+            response_llm = llm(messages)
+            recomendacion = response_llm.content.strip()
+
+            # Log para verificar la respuesta del modelo para cada grupo
+            app.logger.info(f"Recomendación para el grupo {grupo}: {recomendacion}")
+
+            # Agregar la recomendación a la lista de resultados
+            recomendaciones.append({
+                "grupo": grupo,
+                "puntaje_total": puntaje_total,
+                "recomendacion": recomendacion
+            })
+
+        # Log para verificar todas las recomendaciones generadas
+        app.logger.info(f"Recomendaciones generadas: {recomendaciones}")
+
+        # Responder con las recomendaciones generadas por el modelo
+        return jsonify({"prediccion": recomendaciones}), 200
+
+    except Exception as e:
+        app.logger.error(f"Error en la predicción: {str(e)}")
+        return jsonify({"error": f"Error en la predicción: {str(e)}"}), 500
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
