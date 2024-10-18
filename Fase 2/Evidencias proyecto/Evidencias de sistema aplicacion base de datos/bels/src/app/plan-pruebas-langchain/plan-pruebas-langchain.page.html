@@ -5,19 +5,20 @@
 </ion-header>
 
 <ion-content>
-  <!-- Mostrar las preguntas y respuestas generadas por la IA -->
-  <ion-card *ngFor="let item of preguntasRespuestas">
-    <ion-card-header>
-      <ion-card-title>{{ item.pregunta }}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p [innerHTML]="item.respuesta"></p>
-    </ion-card-content>
-  </ion-card>
-
-  <!-- Botón para generar el plan de trabajo con un spinner -->
+  <!-- Botón para generar el plan de trabajo con spinner -->
   <ion-button expand="full" (click)="generarRespuestas()">
     <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
     <span *ngIf="!cargando">Generar plan de trabajo</span>
   </ion-button>
+
+  <!-- Mostrar las recomendaciones por grupo -->
+  <ion-card *ngFor="let item of recomendaciones">
+    <ion-card-header>
+      <ion-card-title>Grupo: {{ item.grupo }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Puntaje Total:</strong> {{ item.puntaje_total }}</p>
+      <p><strong>Recomendación:</strong> {{ item.recomendacion }}</p>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
