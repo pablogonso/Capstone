@@ -1,7 +1,5 @@
-# backend/app.py
-
 from flask import Flask, request, jsonify
-from langchain_community.chat_models import ChatOpenAI
+from langchain_community.chat_models.openai import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
 from flask_cors import CORS
 import os
@@ -93,15 +91,14 @@ def predict():
         for grupo, puntaje_total in suma_puntajes_por_grupo.items():
             # Crear el prompt para cada grupo
             prompt = (
+                f"Eres un psicólogo experto en coaching motivacional y conducta humana. "
                 f"El grupo '{grupo}' tiene un puntaje total de {puntaje_total}. "
-                f"Realiza una recomendación para mejorar en este grupo. "
-                f"Si el puntaje es menor al 85% del puntaje máximo del grupo, la recomendación debe ser más impactante a medida que el puntaje baje.\n"
-                f"Los puntajes máximos por grupo son los siguientes: "
-                f"Autocuidado: 40, Habilidades Domésticas: 28, Habilidades Comunitarias: 16, Relaciones Sociales: 20."
-                f"La recomendación debe ser generada en este formato: Recomendación: texto_de_la_recomendación.\n"
+                f"El grupo Autocuidado tiene 40 puntos máximo. Si el puntaje es menor a 35 puntos, ve realizando recomendaciones más efectivas e impactantes a medida que el puntaje baje"
+                f"El grupo Habilidades Domésticas tiene 28 puntos máximo. Si el puntaje es menor a 22 puntos, ve realizando recomendaciones más efectivas e impactantes a medida que el puntaje baje"
+                f"El grupo Habilidades Comunitarias tiene 16 puntos máximo. Si el puntaje es menor a 12 puntos, ve realizando recomendaciones más efectivas e impactantes a medida que el puntaje baje"
+                f"El grupo Relaciones Sociales tiene 20 puntos máximo. Si el puntaje es menor a 16 puntos, ve realizando recomendaciones más efectivas e impactantes a medida que el puntaje baje"
                 f"Grupo: {grupo}, Puntaje Total: {puntaje_total}\n"
-                )
-
+            )
 
 
             # Configurar el mensaje para el modelo de lenguaje

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BelsService } from '../services/question.service'; // Asegúrate de que la ruta es correcta
 import { AngularFirestore } from '@angular/fire/compat/firestore'; // Importar AngularFirestore para trabajar con Firebase
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-realizar-test',
@@ -11,7 +12,7 @@ export class RealizarTestPage implements OnInit {
   preguntas: any[] = [];
   indiceActual: number = 0;  // Controla la pregunta actual
 
-  constructor(private belsService: BelsService, private firestore: AngularFirestore) { }
+  constructor(private router: Router, private belsService: BelsService, private firestore: AngularFirestore) { }
 
   ngOnInit() {
     // Llamar al servicio para obtener las preguntas cuando se cargue el componente
@@ -51,12 +52,14 @@ export class RealizarTestPage implements OnInit {
 
     // Guardar las respuestas en la colección 'Respuestas' en Firebase
     this.firestore.collection('Respuestas').add({ respuestas: respuestasArray })
-      .then((docRef) => {
-        console.log(`Respuestas enviadas correctamente con ID generado: ${docRef.id}`);
-        // Aquí puedes agregar un mensaje de éxito o redirigir al usuario
-      })
-      .catch(error => {
-        console.error('Error al enviar las respuestas: ', error);
-      });
-  }
+    .then((docRef) => {
+      console.log(`Respuestas enviadas correctamente con ID generado: ${docRef.id}`);
+      this.router.navigate(['/plan-de-trabajo']); 
+      // Aquí puedes agregar un mensaje de éxito o redirigir al usuario
+    })
+    .catch(error => {
+      console.error('Error al enviar las respuestas: ', error);
+      });
+  }
+}
 }
