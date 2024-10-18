@@ -40,26 +40,31 @@ export class RealizarTestPage implements OnInit {
     this.preguntas[indice].estado = true;
   }
 
-  // Función para procesar el envío del formulario
-  enviarFormulario() {
-    // Crear un array con las respuestas del usuario
-    const respuestasArray = this.preguntas.map(pregunta => ({
-      pregunta: pregunta.pregunta,
-      valor: pregunta.valor,
-      estado: pregunta.estado,
-      grupo: pregunta.Grupo
-    }));
+  // Método para procesar el envío del formulario
+enviarFormulario() {
+  // Crear un array con las respuestas del usuario
+  const respuestasArray = this.preguntas.map(pregunta => ({
+    pregunta: pregunta.pregunta,
+    valor: pregunta.valor,
+    estado: pregunta.estado,
+    grupo: pregunta.Grupo
+  }));
 
-    // Guardar las respuestas en la colección 'Respuestas' en Firebase
-    this.firestore.collection('Respuestas').add({ respuestas: respuestasArray })
+  // Guardar las respuestas en la colección 'Respuestas' en Firebase
+  this.firestore.collection('Respuestas').add({ respuestas: respuestasArray })
     .then((docRef) => {
       console.log(`Respuestas enviadas correctamente con ID generado: ${docRef.id}`);
-      this.router.navigate(['/plan-de-trabajo']); 
-      // Aquí puedes agregar un mensaje de éxito o redirigir al usuario
+      
+      // Guardar el ID en localStorage
+      localStorage.setItem('documentoId', docRef.id);
+
+      // Redirigir al usuario a la página del plan pruebas langchain
+      this.router.navigate(['/plan-pruebas-langchain']);
     })
     .catch(error => {
       console.error('Error al enviar las respuestas: ', error);
-      });
-  }
+    });
 }
+
 }
+
