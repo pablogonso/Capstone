@@ -53,8 +53,8 @@ def generar_respuestas():
         # Registro adicional para ver la estructura de la respuesta antes de devolverla
         app.logger.info(f"Estructura de la respuesta que se devolverá: {respuestas_firebase}")
 
-        # Devolver las recomendaciones o el contenido que necesites
-        return jsonify({"respuestas": respuestas_firebase.get('respuestas', [])})
+         # Devolver la ID recibida y las respuestas para corroboración
+        return jsonify({"documentoId": documento_id, "respuestas": respuestas_firebase.get('respuestas', [])})
 
     except Exception as e:
         app.logger.error(f"Error en la generación de respuestas: {str(e)}")
