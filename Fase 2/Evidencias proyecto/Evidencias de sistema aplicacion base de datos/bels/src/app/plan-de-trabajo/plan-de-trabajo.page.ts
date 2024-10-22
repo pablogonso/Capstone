@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { actividad, categoria } from '../modelo/tareas.model';
+import { actividad, categoria } from '../Modelo/tareas.model';
 import { Title } from '@angular/platform-browser';
 import { ModalController, ModalOptions } from '@ionic/angular';
 import { VerActividadesComponent } from '../componentes/ver-actividades/ver-actividades.component';
@@ -17,7 +17,7 @@ import { VerActividadesComponent } from '../componentes/ver-actividades/ver-acti
 
 export class PlanDeTrabajoPage implements OnInit {
 
-categorias:  categoria[] =[
+public categorias:  categoria[] =[
 
     {
       id: '1',
@@ -25,7 +25,7 @@ categorias:  categoria[] =[
       descripcion : "Agregar descripcion",
       actividad :[
 
-        { nombre: 'Actividad 1' , completo : true},
+        { nombre: 'Bañarse' , completo : true},
         { nombre: 'Actividad 2' , completo : false},
         { nombre: 'Actividad 3' , completo : false}
       ]
@@ -38,7 +38,7 @@ categorias:  categoria[] =[
       descripcion : "Agregar descripción",
       actividad :[
 
-        { nombre: 'Actividad 1' , completo : true},
+        { nombre: 'Hacer la cama' , completo : true},
         { nombre: 'Actividad 2' , completo : true},
         { nombre: 'Actividad 3' , completo : false}
       ]
@@ -51,19 +51,19 @@ categorias:  categoria[] =[
       descripcion :  "Agregar descripción",
       actividad :[
 
-        { nombre: 'Actividad 1' , completo : true},
+        { nombre: 'No se me ocurre' , completo : true},
         { nombre: 'Actividad 2' , completo : false},
         { nombre: 'Actividad 3' , completo : false}
       ]
     },
 
     {
-      id: '3',
+      id: '4',
       titulo: "Actividad y relaciones sociales",
       descripcion : "Agregar descripción",
       actividad :[
 
-        { nombre: 'Actividad 1' , completo : true},
+        { nombre: 'Almorzar en familia' , completo : true},
         { nombre: 'Actividad 2' , completo : false},
         { nombre: 'Actividad 3' , completo : false}
       ]
@@ -76,8 +76,7 @@ categorias:  categoria[] =[
 
 
 
-  constructor(
-    private modalController : ModalController,) { }
+  constructor( private modalController : ModalController,) { }
 
 
 
@@ -113,20 +112,22 @@ categorias:  categoria[] =[
   }
 
 
-  verTarea(categoria?: categoria){
+  verTarea(categoria?: categoria) {
     this.presentModal({
       component: VerActividadesComponent,
-      componentProps : { categoria },
-      
-
-
-    })
-
-
-
-
+      componentProps: { categoria }
+    });
+  }
 }
-}
+
+
+    
+
+
+
+
+
+
 
 
 

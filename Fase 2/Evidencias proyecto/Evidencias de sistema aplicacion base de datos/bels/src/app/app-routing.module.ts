@@ -55,9 +55,14 @@ const routes: Routes = [
   },
   {
     path: 'actividades',
-    loadChildren: () => import('./actividades/actividades.module').then( m => m.ActividadesPageModule),
+    loadChildren: () => import('./actividades/actividades.module').then( m => m.ActividadesModule),
     canActivate: [AuthGuard] // Protección con AuthGuard
+  },
+  {
+    path: 'instrucciones',
+    loadChildren: () => import('./instrucciones/instrucciones.module').then( m => m.InstruccionesPageModule)
   }
+
 ];
 
 @NgModule({

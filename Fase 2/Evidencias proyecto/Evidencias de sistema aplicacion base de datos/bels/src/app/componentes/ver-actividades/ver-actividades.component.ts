@@ -1,35 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Title } from '@angular/platform-browser';
-import { ModalController, ModalOptions } from '@ionic/angular';
-import { IonicModule } from '@ionic/angular';
-
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-ver-actividades',
   templateUrl: './ver-actividades.component.html',
   styleUrls: ['./ver-actividades.component.scss'],
 })
-
-
-export class VerActividadesComponent  implements OnInit {
-
-
+export class VerActividadesComponent implements OnInit {
+  @Input() categoria: any;
 
   constructor() { }
 
   ngOnInit() {
-
-
-    
+    console.log(this.categoria);  // Aquí puedes ver los datos de la categoría
   }
-
-
-  
-
-  
-
 }
-
-
-

@@ -1,5 +1,17 @@
-<header>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Ver Actividades</ion-title>
+    
+  </ion-toolbar>
+</ion-header>
 
-
-  
-</header>
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let actividad of categoria.actividad">
+      <ion-label>
+        <h2>{{ actividad.nombre }}</h2>
+        <p>{{ actividad.completo ? 'Completado' : 'Pendiente' }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
