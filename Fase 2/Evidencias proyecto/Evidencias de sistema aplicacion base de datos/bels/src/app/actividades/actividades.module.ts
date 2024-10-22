@@ -1,20 +1,16 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { IonicModule } from '@ionic/angular';
-
-import { ActividadesPageRoutingModule } from './actividades-routing.module';
-
-import { ActividadesPage } from './actividades.page';
+import { VerActividadesComponent } from '../componentes/ver-actividades/ver-actividades.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
-    ActividadesPageRoutingModule
+    IonicModule
   ],
-  declarations: [ActividadesPage]
+  declarations: [VerActividadesComponent],
+  exports: [VerActividadesComponent] // Exportar si necesitas usarlo en otros módulos
 })
-export class ActividadesPageModule {}
+export class ActividadesModule {}
