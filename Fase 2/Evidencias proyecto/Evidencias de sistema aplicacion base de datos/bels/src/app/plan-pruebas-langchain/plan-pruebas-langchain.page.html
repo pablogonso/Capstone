@@ -5,19 +5,18 @@
 </ion-header>
 
 <ion-content>
-  <!-- Botón para generar el plan de trabajo con spinner -->
   <ion-button expand="full" (click)="generarRespuestas()">
     <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
     <span *ngIf="!cargando">Generar plan de trabajo</span>
   </ion-button>
 
-  <!-- Mostrar las recomendaciones por grupo -->
   <ion-card *ngFor="let item of recomendaciones">
     <ion-card-header>
       <ion-card-title>Grupo: {{ item.grupo }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p><strong>Puntaje Total:</strong> {{ item.puntaje_total }}</p>
+      <p><strong>Pregunta:</strong> {{ item.pregunta }}</p>
+      <p><strong>Puntaje:</strong> {{ item.puntaje_total }}</p> <!-- Mostrar el puntaje individual aquí -->
       <p><strong>Recomendación:</strong> {{ item.recomendacion }}</p>
     </ion-card-content>
   </ion-card>

@@ -19,7 +19,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, methods=["GET", "POST", "OPTIONS"])
 
 # Configurar Firebase
-cred = credentials.Certificate(r"C:\Capstone\Fase 2\Evidencias proyecto\Evidencias de sistema aplicacion base de datos\bels\src\proyecto-bels-firebase-adminsdk-pfhrt-b9e8841ff5.json")
+cred = credentials.Certificate(r"C:\Capstone\Fase 2\Evidencias proyecto\Evidencias de sistema aplicacion base de datos\bels\src\proyecto-bels-firebase-adminsdk-pfhrt-873a8dc4ff.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -31,6 +31,7 @@ def generar_respuestas():
         pais = data.get('pais')
         ciudad = data.get('ciudad')
         documento_id = data.get('documentoId')
+        grupo_activo = data.get('grupoActivo', "Autocuidado")  # Obtener el grupo activo, por defecto "Autocuidado"
 
         if not documento_id:
             return jsonify({"error": "No se proporcionó la ID del documento"}), 400
@@ -44,21 +45,23 @@ def generar_respuestas():
                 return jsonify({"error": "Documento no encontrado"}), 404
 
             # Obtener los datos del documento
-            respuestas_firebase = doc.to_dict()
+            respuestas_firebase = doc.to_dict().get('respuestas', [])
             app.logger.info(f"Respuestas obtenidas de Firebase: {respuestas_firebase}")
+
+            # Filtrar las respuestas por el grupo activo
+            respuestas_filtradas = [resp for resp in respuestas_firebase if resp.get('grupo') == grupo_activo]
+            app.logger.info(f"Respuestas filtradas para el grupo activo ({grupo_activo}): {respuestas_filtradas}")
 
         except Exception as e:
             return jsonify({"error": f"Error al obtener el documento desde Firebase: {str(e)}"}), 500
 
-        # Registro adicional para ver la estructura de la respuesta antes de devolverla
-        app.logger.info(f"Estructura de la respuesta que se devolverá: {respuestas_firebase}")
-
-         # Devolver la ID recibida y las respuestas para corroboración
-        return jsonify({"documentoId": documento_id, "respuestas": respuestas_firebase.get('respuestas', [])})
+        # Devolver la ID recibida y las respuestas filtradas
+        return jsonify({"documentoId": documento_id, "respuestas": respuestas_filtradas})
 
     except Exception as e:
         app.logger.error(f"Error en la generación de respuestas: {str(e)}")
         return jsonify({"error": f"Ha ocurrido un error: {str(e)}"}), 500
+
 
 # Ruta para manejar las solicitudes de predicción
 @app.route('/api/predict', methods=['POST', 'OPTIONS'])
@@ -74,32 +77,35 @@ def predict():
     try:
         # Procesar la solicitud POST para realizar la predicción
         data = request.json
-        puntajes_por_grupo = data.get('puntajes', {})
+        respuestas = data.get('respuestas', [])
         ciudad = data.get('ciudad')
         pais = data.get('pais')
 
-        # Verificación para asegurar que los puntajes no estén vacíos
-        if not puntajes_por_grupo:
-            app.logger.error("Los puntajes están vacíos o no fueron proporcionados.")
-            return jsonify({"error": "Los puntajes no fueron proporcionados."}), 400
+        # Log para verificar la estructura de los datos recibidos
+        app.logger.info(f"Datos recibidos para predicción: {data}")
 
-        # Sumar los puntajes por grupo
-        suma_puntajes_por_grupo = {grupo: sum(puntajes) for grupo, puntajes in puntajes_por_grupo.items()}
+        # Verificación para asegurar que las respuestas no estén vacías
+        if not respuestas:
+            app.logger.error("Las respuestas están vacías o no fueron proporcionadas.")
+            return jsonify({"error": "Las respuestas no fueron proporcionadas."}), 400
 
-        # Crear un prompt específico para cada grupo y obtener recomendaciones para cada uno
+        # Crear un prompt específico para cada pregunta y obtener recomendaciones
         recomendaciones = []
-        for grupo, puntaje_total in suma_puntajes_por_grupo.items():
-            # Crear el prompt para cada grupo
+        for respuesta in respuestas:
+            grupo = respuesta.get('grupo')
+            pregunta = respuesta.get('pregunta')
+            valor = respuesta.get('valor', 0)
+
+            # Crear el prompt para cada pregunta
             prompt = (
                 f"Eres un psicólogo experto en coaching motivacional y conducta humana. "
-                f"El grupo '{grupo}' tiene un puntaje total de {puntaje_total}. "
-                f"El grupo Autocuidado tiene 40 puntos máximo. Si el puntaje es menor a 35 puntos, ve realizando recomendaciones más efectivas e impactantes a medida que el puntaje baje"
-                f"El grupo Habilidades Domésticas tiene 28 puntos máximo. Si el puntaje es menor a 22 puntos, ve realizando recomendaciones más efectivas e impactantes a medida que el puntaje baje"
-                f"El grupo Habilidades Comunitarias tiene 16 puntos máximo. Si el puntaje es menor a 12 puntos, ve realizando recomendaciones más efectivas e impactantes a medida que el puntaje baje"
-                f"El grupo Relaciones Sociales tiene 20 puntos máximo. Si el puntaje es menor a 16 puntos, ve realizando recomendaciones más efectivas e impactantes a medida que el puntaje baje"
-                f"Grupo: {grupo}, Puntaje Total: {puntaje_total}\n"
+                f"La siguiente pregunta pertenece al grupo '{grupo}'. "
+                f"La pregunta es: '{pregunta}' y el puntaje obtenido es {valor} de un máximo de 4. "
+                f"En función de este puntaje, proporciona una única recomendación concisa y altamente práctica para mejorar esta área."
+                f"La recomendación debe ser un texto breve en este formato: 'Recomendación: XXXXXXXXXX' "
+                f"Si el puntaje es igual a 4 dí: ¡Felicitaciones! Has alcanzado el puntaje máximo, sigue así."
+                f"No incluyas la palabra 'Recomendación al inicio de la recomendación."
             )
-
 
             # Configurar el mensaje para el modelo de lenguaje
             messages = [
@@ -107,22 +113,17 @@ def predict():
                 HumanMessage(content=prompt)
             ]
 
-            # Obtener la respuesta del modelo para el grupo actual
+            # Obtener la respuesta del modelo para la pregunta actual
             response_llm = llm(messages)
             recomendacion = response_llm.content.strip()
-
-            # Log para verificar la respuesta del modelo para cada grupo
-            app.logger.info(f"Recomendación para el grupo {grupo}: {recomendacion}")
 
             # Agregar la recomendación a la lista de resultados
             recomendaciones.append({
                 "grupo": grupo,
-                "puntaje_total": puntaje_total,
+                "pregunta": pregunta,
+                "valor": valor,
                 "recomendacion": recomendacion
             })
-
-        # Log para verificar todas las recomendaciones generadas
-        app.logger.info(f"Recomendaciones generadas: {recomendaciones}")
 
         # Responder con las recomendaciones generadas por el modelo
         return jsonify({"prediccion": recomendaciones}), 200

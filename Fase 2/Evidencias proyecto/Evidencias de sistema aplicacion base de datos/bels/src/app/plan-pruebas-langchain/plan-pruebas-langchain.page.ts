@@ -1,5 +1,3 @@
-// src/app/plan-pruebas-langchain/plan-pruebas-langchain.page.ts
-
 import { Component, OnInit } from '@angular/core';
 import axios from 'axios';
 import { FirebaseService } from '../services/firebase.service';
@@ -14,6 +12,7 @@ export class PlanPruebasLangchainPage implements OnInit {
   pais = "Chile";
   recomendaciones: any[] = [];
   cargando: boolean = false;
+  grupoActivo: string = "Autocuidado"; // Inicializamos con el primer grupo
 
   constructor(private firebaseService: FirebaseService) {}
 
@@ -38,7 +37,8 @@ export class PlanPruebasLangchainPage implements OnInit {
       const response = await axios.post('http://127.0.0.1:5000/api/generar-respuestas', {
         documentoId: documentoId,
         ciudad: this.ciudad,
-        pais: this.pais
+        pais: this.pais,
+        grupoActivo: this.grupoActivo // Enviar el grupo activo
       }, {
         headers: {
           'Content-Type': 'application/json'
@@ -56,32 +56,8 @@ export class PlanPruebasLangchainPage implements OnInit {
           return;
         }
 
-        // Agrupar los puntajes por grupo y convertirlos a números enteros
-        const puntajesPorGrupo: { [key: string]: number[] } = {};
-
-        respuestasFirebase.forEach((respuesta: any) => {
-          const grupo = respuesta.grupo;
-          const valor = parseInt(respuesta.valor, 10); // Convertir a entero
-
-          // Verificación adicional para asegurar que el valor sea un número válido
-          if (isNaN(valor)) {
-            console.warn(`El valor no es un número válido: ${respuesta.valor}`);
-            return; // Saltar esta iteración si el valor no es un número válido
-          }
-
-          // Inicializar el grupo si no existe en el diccionario
-          if (!puntajesPorGrupo[grupo]) {
-            puntajesPorGrupo[grupo] = [];
-          }
-
-          // Agregar el valor convertido a entero al grupo correspondiente
-          puntajesPorGrupo[grupo].push(valor);
-        });
-
-        console.log("Puntajes agrupados por grupo:", puntajesPorGrupo);
-
-        // Enviar los puntajes agrupados al modelo predictivo
-        await this.enviarAlModeloPredictivo(puntajesPorGrupo);
+        // Enviar las respuestas al modelo predictivo
+        await this.enviarAlModeloPredictivo(respuestasFirebase);
       } else {
         console.error("No se encontraron respuestas en la respuesta del backend.");
       }
@@ -92,13 +68,20 @@ export class PlanPruebasLangchainPage implements OnInit {
     this.cargando = false;
   }
 
-  // Método para enviar los puntajes al modelo predictivo
-  async enviarAlModeloPredictivo(puntajesPorGrupo: { [key: string]: number[] }) {
+  // Método para enviar las respuestas al modelo predictivo
+  async enviarAlModeloPredictivo(respuestasGrupoActivo: any[]) {
     try {
-      console.log("Enviando puntajes al modelo predictivo:", puntajesPorGrupo);
-
+      console.log("Enviando respuestas al modelo predictivo:", respuestasGrupoActivo);
+  
+      if (!respuestasGrupoActivo || respuestasGrupoActivo.length === 0) {
+        console.error("Las respuestas están vacías o no son válidas.");
+        this.cargando = false;
+        return;
+      }
+  
+      // Realizar la solicitud POST al backend
       const response = await axios.post('http://127.0.0.1:5000/api/predict', {
-        puntajes: puntajesPorGrupo,
+        respuestas: respuestasGrupoActivo,
         ciudad: this.ciudad,
         pais: this.pais
       }, {
@@ -106,16 +89,24 @@ export class PlanPruebasLangchainPage implements OnInit {
           'Content-Type': 'application/json'
         }
       });
-
+  
       if (response.data && response.data.prediccion) {
         console.log("Resultado del modelo predictivo:", response.data.prediccion);
         
         // Asegúrate de que 'this.recomendaciones' sea un array
-        this.recomendaciones = Array.isArray(response.data.prediccion) ? response.data.prediccion : [response.data.prediccion];
+        this.recomendaciones = response.data.prediccion.map((recomendacion: any) => ({
+          ...recomendacion,
+          puntaje_total: recomendacion.valor // Aquí se cambia para que sea el puntaje de la pregunta
+        }));
+      } else {
+        console.error("No se encontró la predicción en la respuesta del backend.");
       }
     } catch (error) {
-      console.error("Error al enviar los puntajes al modelo predictivo:", error);
+      console.error("Error al enviar las respuestas al modelo predictivo:", error);
     }
+  
+    this.cargando = false;
   }
-
+  
+  
 }
