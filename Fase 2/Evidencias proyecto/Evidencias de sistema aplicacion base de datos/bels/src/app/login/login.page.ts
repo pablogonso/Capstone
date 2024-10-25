@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '../services/auth.service'; // Servicio de autenticación
 import { NavController } from '@ionic/angular'; // NavController para redirigir
 import { AlertController } from '@ionic/angular'; // Para mostrar alertas en caso de error
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Component({
   selector: 'app-login',
@@ -13,10 +14,11 @@ export class LoginPage {
   password: string = '';
 
   constructor(
-    private authService: AuthService, 
+    private afAuth : AngularFireAuth,
+    private authService: AuthService,
     private navCtrl: NavController,
     private alertController: AlertController // Para mostrar errores
-  ) {}
+  ) { }
 
   onSubmit() {
     this.authService.login(this.email, this.password)
@@ -43,4 +45,27 @@ export class LoginPage {
 
     await alert.present();
   }
+
+  recuperarContrasena() {
+    if (!this.email) {
+      this.presentAlert('Error', 'Por favor ingresa tu correo electrónico');
+      return;
+    }
+
+    this.authService.recuperarContrasena(this.email)
+      .then(() => {
+        this.presentAlert('Correo Enviado', 'Por favor revisa tu correo electrónico para restablecer tu contraseña');
+      })
+      .catch(error => {
+        if (error.message === 'Este correo no está registrado') {
+          this.presentAlert('Error', 'El correo ingresado no se encuentra registrado. Verifica e intenta nuevamente.');
+        } else {
+          this.presentAlert('Error', 'No se pudo enviar el correo de recuperación. Intenta nuevamente.');
+        }
+      });
+  }
+
+
+
 }
+
