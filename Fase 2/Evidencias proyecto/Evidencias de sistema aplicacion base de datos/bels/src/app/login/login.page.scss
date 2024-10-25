@@ -9,11 +9,6 @@ ion-card-header {
   background-color: #f8f8f8; /* Color de fondo para el encabezado de la tarjeta */
 }
 
-ion-card-title {
-  font-size: 24px; /* Tamaño de fuente para el título */
-  font-weight: bold; /* Negrita para el título */
-}
-
 ion-card-content p {
   margin-bottom: 15px; /* Espaciado debajo del párrafo */
 }
@@ -26,3 +21,42 @@ ion-button {
 ion-button:hover {
   background-color: #3171e0; /* Color del botón al pasar el mouse */
 }
+
+* {
+  font-family: 'Merriweather', serif;
+  font-weight: 500; /* Puedes especificar el peso que prefieras */
+  font-size: 20px;
+}
+
+.text{
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  color: #3880ff;
+}
+
+ion-card-title {
+  font-size: 24px; /* Tamaño de fuente para el título */
+  font-weight: bold; /* Negrita para el título */
+}
+
+.custom-input {
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-top: 8px;
+  --inner-padding-bottom: 8px;
+  --border-radius: 8px;
+  --background: #f0f0f0;
+  --border-width: 1px;
+  --border-color: #ccc;
+    margin: 16px 0px 16px 0px;
+}
+
+.logo_app{
+  height: 250px;
+  display: flex;
+  margin: auto;
+}
+
+
+

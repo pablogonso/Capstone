@@ -1,25 +1,40 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Iniciar Sesión</ion-title>
-  </ion-toolbar>
+  <ion-title>
+    <!-- Muestra el logo dentro del título -->
+    <img class="logo_app" src="assets/icon/BELS.jpeg" alt="Logo de la aplicación" />
+    <!-- Espacio opcional para el texto adicional -->
+    <p class="text">Basic Everyday living Skills</p>
+  </ion-title>
 </ion-header>
 
 <ion-content>
-  <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-    <ion-item>
-      <ion-label position="floating">Correo electrónico</ion-label>
-      <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
-    </ion-item>
+  <ion-card>
+    <ion-card-content class="card">
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+        <ion-item>
+          <ion-label position="stacked">Correo electrónico</ion-label>
+          <ion-input class="custom-input" type="email" [(ngModel)]="email" name="email" required></ion-input>
+        </ion-item>
+        
+        <ion-item>
+          <ion-label position="stacked">Contraseña</ion-label>
+          <ion-input class="custom-input" type="password" [(ngModel)]="password" name="password" required></ion-input>
+        </ion-item>        
 
-    <ion-item>
-      <ion-label position="floating">Contraseña</ion-label>
-      <ion-input type="password" [(ngModel)]="password" name="password" required></ion-input>
-    </ion-item>
+        <ion-button expand="full" type="submit" [disabled]="!loginForm.form.valid">Iniciar Sesión</ion-button>
+      </form>
 
+<<<<<<< HEAD
     <ion-button expand="full" type="submit" [disabled]="!loginForm.form.valid">Iniciar Sesión</ion-button>
   </form>
 
   <!-- Botón para redirigir a la página de registro -->
   <ion-button expand="full" (click)="goToRegister()">Crear cuenta</ion-button>
   <ion-button expand="block" fill="outline" (click)="recuperarContrasena()">¿Olvidaste tu contraseña?</ion-button>
+=======
+      <!-- Botón para redirigir a la página de registro -->
+      <ion-button expand="full" (click)="goToRegister()">Crear cuenta</ion-button>
+    </ion-card-content>
+  </ion-card>
+>>>>>>> 2dad65ac93de004b471ef65f0751811b4051c083
 </ion-content>
