@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-ver-actividades',
@@ -8,9 +9,13 @@ import { Component, Input, OnInit } from '@angular/core';
 export class VerActividadesComponent implements OnInit {
   @Input() categoria: any;
 
-  constructor() { }
+  constructor(private modalController: ModalController) { }
 
   ngOnInit() {
     console.log(this.categoria);  // Aquí puedes ver los datos de la categoría
+  }
+
+  cerrarModal() {
+    this.modalController.dismiss(); // Cierra el modal sin enviar datos
   }
 }

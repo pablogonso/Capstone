@@ -22,10 +22,10 @@ public categorias:  categoria[] =[
     {
       id: '1',
       titulo: "Autocuidado",
-      descripcion : "Agregar descripcion",
+    descripcion: "Incluye hábitos como una buena alimentación, ejercicio, descanso y gestión del estrés.",
       actividad :[
 
-        { nombre: 'Bañarse' , completo : true},
+        { nombre: 'Bañarse', completo: false },
         { nombre: 'Actividad 2' , completo : false},
         { nombre: 'Actividad 3' , completo : false}
       ]
@@ -38,8 +38,8 @@ public categorias:  categoria[] =[
       descripcion : "Agregar descripción",
       actividad :[
 
-        { nombre: 'Hacer la cama' , completo : true},
-        { nombre: 'Actividad 2' , completo : true},
+        { nombre: 'Hacer la cama' , completo : false},
+        { nombre: 'Actividad 2' , completo : false},
         { nombre: 'Actividad 3' , completo : false}
       ]
     },
@@ -51,7 +51,7 @@ public categorias:  categoria[] =[
       descripcion :  "Agregar descripción",
       actividad :[
 
-        { nombre: 'No se me ocurre' , completo : true},
+        { nombre: 'No se me ocurre' , completo : false},
         { nombre: 'Actividad 2' , completo : false},
         { nombre: 'Actividad 3' , completo : false}
       ]
@@ -63,7 +63,7 @@ public categorias:  categoria[] =[
       descripcion : "Agregar descripción",
       actividad :[
 
-        { nombre: 'Almorzar en familia' , completo : true},
+        { nombre: 'Almorzar en familia' , completo : false},
         { nombre: 'Actividad 2' , completo : false},
         { nombre: 'Actividad 3' , completo : false}
       ]
@@ -118,6 +118,9 @@ public categorias:  categoria[] =[
       componentProps: { categoria }
     });
   }
+
+
+
 }
 
 

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+
 import { ActividadesModule } from './actividades/actividades.module'; // Importar el módulo aquí
 
 

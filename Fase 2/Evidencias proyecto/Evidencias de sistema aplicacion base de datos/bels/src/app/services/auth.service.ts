@@ -3,6 +3,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth'; // Importa Firebase
 import { AngularFirestore } from '@angular/fire/compat/firestore'; // Importa Firestore para guardar los datos adicionales
 import { Router } from '@angular/router';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,7 +12,7 @@ export class AuthService {
     private afAuth: AngularFireAuth, // Inyecta Firebase Authentication
     private firestore: AngularFirestore, // Inyecta Firestore
     private router: Router // Para redirigir después de la autenticación
-  ) {}
+  ) { }
 
   // Función para registrar un nuevo usuario
   register(email: string, password: string) {
@@ -39,4 +40,16 @@ export class AuthService {
       correo: correo
     });
   }
+
+  recuperarContrasena(email: string) {
+    return this.afAuth.sendPasswordResetEmail(email)
+      .catch(error => {
+        if (error.code === 'auth/user-not-found') {
+          throw new Error('Este correo no está registrado');
+        }
+        throw error;
+      });
+  }
+
 }
+
