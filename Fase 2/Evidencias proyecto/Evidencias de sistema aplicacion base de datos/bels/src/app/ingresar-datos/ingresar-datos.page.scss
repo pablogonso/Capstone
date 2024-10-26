@@ -1,5 +1,20 @@
-* {
-    font-family: 'Merriweather', serif;
-    font-weight: 600; /* Puedes especificar el peso que prefieras */
-  }
-  
+*{
+  font-family: 'Merriweather', serif;
+  font-weight: 500; /* Puedes especificar el peso que prefieras */
+}
+
+
+ion-card-title{
+  text-align: center;
+  margin: auto;
+}
+
+ion-item{
+  font-size: 18px;
+}
+
+ion-input{
+  margin: 10px 5px 0px 5px;
+}
+
+

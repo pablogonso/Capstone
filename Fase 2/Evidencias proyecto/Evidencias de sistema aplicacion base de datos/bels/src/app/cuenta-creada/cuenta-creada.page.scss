@@ -1,0 +1,26 @@
+
+  .logo_app{
+  height: 400px;
+  display: flex;
+  margin: auto;
+  }
+  
+  * {
+    font-family: 'Merriweather', serif;
+    font-weight: 600; /* Puedes especificar el peso que prefieras */
+  }
+  
+  .go-login{
+    display: block;
+    width: 50%;
+    margin: auto;
+  }
+
+  ion-card-title, p{
+    margin: 20px 0px 20px 0px;
+    text-align: center;
+  }
+
+  p{
+    font-style: oblique;
+  }
