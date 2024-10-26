@@ -1,12 +1,11 @@
-import { NgModule } from '@angular/core';
+import { NgModule} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { IonicModule } from '@ionic/angular';
 
 import { PagBienvenidaPageRoutingModule } from './pag-bienvenida-routing.module';
-
 import { PagBienvenidaPage } from './pag-bienvenida.page';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 @NgModule({
   imports: [
@@ -15,6 +14,7 @@ import { PagBienvenidaPage } from './pag-bienvenida.page';
     IonicModule,
     PagBienvenidaPageRoutingModule
   ],
-  declarations: [PagBienvenidaPage]
+  declarations: [PagBienvenidaPage],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]  // Para permitir el uso de componentes personalizados
 })
 export class PagBienvenidaPageModule {}

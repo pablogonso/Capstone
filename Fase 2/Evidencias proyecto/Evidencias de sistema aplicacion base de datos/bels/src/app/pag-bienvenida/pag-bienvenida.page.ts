@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { register } from 'swiper/element/bundle';
+import Swiper from 'swiper';
 
+register();
 
 @Component({
   selector: 'app-pag-bienvenida',
@@ -10,26 +12,21 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
   styleUrls: ['./pag-bienvenida.page.scss'],
 })
 export class PagBienvenidaPage implements OnInit {
-
-  constructor(private afAuth: AngularFireAuth, private router: Router) { }
-
-  irArealizartest(){
-    this.router.navigate(['/realizar-test'])
-  }
-  irA(){
-    this.router.navigate(['/ver-resultados'])
-  }
-  irApagebienvenida(){
-    this.router.navigate(['/plan-de-trabajo'])
-  }
-  
-  logout() {
-    return this.afAuth.signOut().then(() => {
-      this.router.navigate(['/login']); // Redirigir al login después de cerrar sesión
-    });
-  }
+  constructor(private afAuth: AngularFireAuth, private router: Router) {}
 
   ngOnInit() {
+    const swiper = new Swiper('.swiper-container', {
+      autoplay: {
+        delay: 5000, // 5 segundos
+        disableOnInteraction: false,
+      },
+      loop: true,
+    });
   }
 
+  logout() {
+    return this.afAuth.signOut().then(() => {
+      this.router.navigate(['/login']);
+    });
+  }
 }
