@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import axios from 'axios';
 import { FirebaseService } from '../services/firebase.service';
+import { PlanService } from '../services/plan.service';
+
 
 @Component({
   selector: 'app-plan-pruebas-langchain',
@@ -10,11 +12,12 @@ import { FirebaseService } from '../services/firebase.service';
 export class PlanPruebasLangchainPage implements OnInit {
   ciudad = "Santiago";
   pais = "Chile";
-  recomendaciones: any[] = [];
+  recomendaciones: any = {};  // Cambiado de any[] a any
   cargando: boolean = false;
   grupoActivo: string = "Autocuidado"; // Inicializamos con el primer grupo
 
-  constructor(private firebaseService: FirebaseService) {}
+  constructor(private firebaseService: FirebaseService, private planService: PlanService) {}
+
 
   ngOnInit() {}
 
@@ -92,12 +95,59 @@ export class PlanPruebasLangchainPage implements OnInit {
   
       if (response.data && response.data.prediccion) {
         console.log("Resultado del modelo predictivo:", response.data.prediccion);
-        
-        // Asegúrate de que 'this.recomendaciones' sea un array
-        this.recomendaciones = response.data.prediccion.map((recomendacion: any) => ({
-          ...recomendacion,
-          puntaje_total: recomendacion.valor // Aquí se cambia para que sea el puntaje de la pregunta
+  
+        // Mapear las recomendaciones para incluir pregunta, plan y puntaje
+        const preguntasPlanes = response.data.prediccion.map((recomendacion: any) => ({
+          pregunta: recomendacion.pregunta,
+          plan: recomendacion.recomendacion,
+          puntaje: recomendacion.valor  // Agregar el puntaje de la pregunta
         }));
+  
+        // Obtener el ID del usuario desde localStorage
+        const documentoId = localStorage.getItem('documentoId');
+        if (!documentoId) {
+          console.error('No se encontró el ID del documento en localStorage');
+          this.cargando = false;
+          return;
+        }
+  
+        // Asignar el idGrupo como string según el grupoActivo
+        let idGrupo = '';
+        switch (this.grupoActivo) {
+          case "Autocuidado":
+            idGrupo = '1';
+            break;
+          case "Habilidades Domésticas":
+            idGrupo = '2';
+            break;
+          case "Habilidades Comunitarias":
+            idGrupo = '3';
+            break;
+          case "Relaciones Sociales":
+            idGrupo = '4';
+            break;
+          default:
+            console.error("Grupo activo desconocido:", this.grupoActivo);
+            this.cargando = false;
+            return;
+        }
+  
+        // Generar el idPlan único
+        const idPlan = this.planService.generarIdPlan(documentoId, 1);  // Solo una vez por grupo
+  
+        // Crear un único objeto para almacenar en Firebase
+        const planTrabajo = {
+          idPlan,
+          idGrupo,
+          preguntasPlanes  // Array con las preguntas, planes y puntajes
+        };
+  
+        // Asignar el plan de trabajo a `this.recomendaciones` para que esté accesible en el HTML
+        this.recomendaciones = planTrabajo;
+  
+        // Guardar el objeto completo en Firebase
+        await this.planService.guardarPlanTrabajoGrupo(planTrabajo);
+  
       } else {
         console.error("No se encontró la predicción en la respuesta del backend.");
       }

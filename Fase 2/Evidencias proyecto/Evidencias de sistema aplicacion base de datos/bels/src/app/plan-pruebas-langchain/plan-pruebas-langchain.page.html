@@ -10,14 +10,15 @@
     <span *ngIf="!cargando">Generar plan de trabajo</span>
   </ion-button>
 
-  <ion-card *ngFor="let item of recomendaciones">
-    <ion-card-header>
-      <ion-card-title>Grupo: {{ item.grupo }}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p><strong>Pregunta:</strong> {{ item.pregunta }}</p>
-      <p><strong>Puntaje:</strong> {{ item.puntaje_total }}</p> <!-- Mostrar el puntaje individual aquí -->
-      <p><strong>Recomendación:</strong> {{ item.recomendacion }}</p>
-    </ion-card-content>
-  </ion-card>
+  <div *ngIf="recomendaciones && recomendaciones.preguntasPlanes">
+    <h2>Grupo: {{ grupoActivo }}</h2>
+    
+    <ion-card *ngFor="let item of recomendaciones.preguntasPlanes">
+      <ion-card-content>
+        <p><strong>Pregunta:</strong> {{ item.pregunta }}</p>
+        <p><strong>Puntaje:</strong> {{ item.puntaje }}</p>
+        <p><strong>Recomendación:</strong> {{ item.plan }}</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>
