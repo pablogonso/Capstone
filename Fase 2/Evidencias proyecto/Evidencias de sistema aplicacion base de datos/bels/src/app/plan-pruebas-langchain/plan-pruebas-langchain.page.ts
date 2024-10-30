@@ -3,7 +3,6 @@ import axios from 'axios';
 import { FirebaseService } from '../services/firebase.service';
 import { PlanService } from '../services/plan.service';
 
-
 @Component({
   selector: 'app-plan-pruebas-langchain',
   templateUrl: './plan-pruebas-langchain.page.html',
@@ -12,25 +11,26 @@ import { PlanService } from '../services/plan.service';
 export class PlanPruebasLangchainPage implements OnInit {
   ciudad = "Santiago";
   pais = "Chile";
-  recomendaciones: any = {};  // Cambiado de any[] a any
+  recomendaciones: any = {}; // Cambiado de any[] a any
   cargando: boolean = false;
   grupoActivo: string = "Autocuidado"; // Inicializamos con el primer grupo
+  buttonDisabled: boolean = false; // Nueva propiedad para controlar el botón
 
   constructor(private firebaseService: FirebaseService, private planService: PlanService) {}
-
 
   ngOnInit() {}
 
   // Método para generar respuestas utilizando el ID del documento almacenado en localStorage
   async generarRespuestas() {
     this.cargando = true;
+    this.buttonDisabled = true; // Deshabilitar el botón al iniciar la generación del plan
 
     try {
-      // Obtener el ID del documento de localStorage
       const documentoId = localStorage.getItem('documentoId');
       if (!documentoId) {
         console.error('No se encontró el ID del documento en localStorage');
         this.cargando = false;
+        this.buttonDisabled = false; // Habilitar el botón si hay un error
         return;
       }
 
@@ -41,7 +41,7 @@ export class PlanPruebasLangchainPage implements OnInit {
         documentoId: documentoId,
         ciudad: this.ciudad,
         pais: this.pais,
-        grupoActivo: this.grupoActivo // Enviar el grupo activo
+        grupoActivo: this.grupoActivo
       }, {
         headers: {
           'Content-Type': 'application/json'
@@ -52,37 +52,39 @@ export class PlanPruebasLangchainPage implements OnInit {
         const respuestasFirebase = response.data.respuestas;
         console.log("Respuestas obtenidas desde Firebase:", respuestasFirebase);
 
-        // Verificación adicional de la estructura de los datos
         if (!Array.isArray(respuestasFirebase) || respuestasFirebase.length === 0) {
           console.error("Las respuestas de Firebase no son un array o están vacías.");
           this.cargando = false;
+          this.buttonDisabled = false; // Habilitar el botón si no hay respuestas
           return;
         }
 
-        // Enviar las respuestas al modelo predictivo
+        // Llama al método para enviar las respuestas al modelo predictivo
         await this.enviarAlModeloPredictivo(respuestasFirebase);
       } else {
         console.error("No se encontraron respuestas en la respuesta del backend.");
+        this.buttonDisabled = false; // Habilitar el botón si no hay respuestas
       }
     } catch (error) {
       console.error("Error al generar las respuestas:", error);
+      this.buttonDisabled = false; // Habilitar el botón en caso de error
     }
 
-    this.cargando = false;
+    this.cargando = false; // Ocultar el spinner
   }
 
   // Método para enviar las respuestas al modelo predictivo
   async enviarAlModeloPredictivo(respuestasGrupoActivo: any[]) {
     try {
       console.log("Enviando respuestas al modelo predictivo:", respuestasGrupoActivo);
-  
+
       if (!respuestasGrupoActivo || respuestasGrupoActivo.length === 0) {
         console.error("Las respuestas están vacías o no son válidas.");
         this.cargando = false;
+        this.buttonDisabled = false; // Habilitar el botón si no hay respuestas válidas
         return;
       }
-  
-      // Realizar la solicitud POST al backend
+
       const response = await axios.post('http://127.0.0.1:5000/api/predict', {
         respuestas: respuestasGrupoActivo,
         ciudad: this.ciudad,
@@ -92,26 +94,25 @@ export class PlanPruebasLangchainPage implements OnInit {
           'Content-Type': 'application/json'
         }
       });
-  
+
       if (response.data && response.data.prediccion) {
         console.log("Resultado del modelo predictivo:", response.data.prediccion);
-  
-        // Mapear las recomendaciones para incluir pregunta, plan y puntaje
+
         const preguntasPlanes = response.data.prediccion.map((recomendacion: any) => ({
           pregunta: recomendacion.pregunta,
           plan: recomendacion.recomendacion,
-          puntaje: recomendacion.valor  // Agregar el puntaje de la pregunta
+          puntaje: recomendacion.valor
         }));
-  
-        // Obtener el ID del usuario desde localStorage
-        const documentoId = localStorage.getItem('documentoId');
-        if (!documentoId) {
-          console.error('No se encontró el ID del documento en localStorage');
+
+        // Obtener el ID de documento del usuario
+        const usuarioIdDocumento = await this.firebaseService.obtenerIdUsuarioDocumento();
+        if (!usuarioIdDocumento) {
+          console.error('No se encontró el ID de documento de usuario');
           this.cargando = false;
+          this.buttonDisabled = false; // Habilitar el botón si no se encuentra el ID de usuario
           return;
         }
-  
-        // Asignar el idGrupo como string según el grupoActivo
+
         let idGrupo = '';
         switch (this.grupoActivo) {
           case "Autocuidado":
@@ -129,34 +130,33 @@ export class PlanPruebasLangchainPage implements OnInit {
           default:
             console.error("Grupo activo desconocido:", this.grupoActivo);
             this.cargando = false;
+            this.buttonDisabled = false; // Habilitar el botón si el grupo es desconocido
             return;
         }
-  
-        // Generar el idPlan único
-        const idPlan = this.planService.generarIdPlan(documentoId, 1);  // Solo una vez por grupo
-  
-        // Crear un único objeto para almacenar en Firebase
+
+        // Generar `idPlan` único
+        const idPlan = await this.planService.generarIdPlan(usuarioIdDocumento);
+
         const planTrabajo = {
           idPlan,
           idGrupo,
-          preguntasPlanes  // Array con las preguntas, planes y puntajes
+          preguntasPlanes
         };
-  
-        // Asignar el plan de trabajo a `this.recomendaciones` para que esté accesible en el HTML
+
         this.recomendaciones = planTrabajo;
-  
-        // Guardar el objeto completo en Firebase
+
+        // Guardar el plan de trabajo en Firebase
         await this.planService.guardarPlanTrabajoGrupo(planTrabajo);
-  
+
       } else {
         console.error("No se encontró la predicción en la respuesta del backend.");
+        this.buttonDisabled = false; // Habilitar el botón si no se encuentra la predicción
       }
     } catch (error) {
       console.error("Error al enviar las respuestas al modelo predictivo:", error);
+      this.buttonDisabled = false; // Habilitar el botón en caso de error
     }
-  
-    this.cargando = false;
+
+    this.cargando = false; // Ocultar el spinner al final
   }
-  
-  
 }

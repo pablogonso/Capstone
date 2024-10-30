@@ -19,7 +19,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, methods=["GET", "POST", "OPTIONS"])
 
 # Configurar Firebase
-cred = credentials.Certificate(r"C:\Capstone\Fase 2\Evidencias proyecto\Evidencias de sistema aplicacion base de datos\bels\src\proyecto-bels-firebase-adminsdk-pfhrt-6e94d0a712.json")
+cred = credentials.Certificate(r"C:\Capstone\Fase 2\Evidencias proyecto\Evidencias de sistema aplicacion base de datos\bels\src\proyecto-bels-firebase-adminsdk-pfhrt-b5cc6ba183.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -102,10 +102,11 @@ def predict():
                 f"Eres un psicólogo experto en coaching motivacional y conducta humana. "
                 f"La siguiente pregunta pertenece al grupo '{grupo}'. "
                 f"La pregunta es: '{pregunta}' y el puntaje obtenido es {valor} de un máximo de 4. "
-                f"Proporciona una única recomendación concisa, específica y realizable en un solo día para mejorar esta área. "
+                f"Proporciona una única recomendación concisa y específica para mejorar esta área. "
                 f"La recomendación debe ser una acción práctica que la persona pueda marcar como 'completada' al final del día. "
                 f"Evita recomendaciones generales o abstractas. Si el puntaje es igual a 4, responde: '¡Felicitaciones! Has alcanzado el puntaje máximo, sigue así.' "
                 f"No incluyas la palabra 'Recomendación' al inicio de la recomendación."
+                f"Mientras más bajo sea el puntaje, la recomendación debe ser de más impacto. Mientras más alto sea el puntaje, la recomendación puede ser más relajada"
             )
 
 
@@ -134,7 +135,5 @@ def predict():
         app.logger.error(f"Error en la predicción: {str(e)}")
         return jsonify({"error": f"Error en la predicción: {str(e)}"}), 500
     
-
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
