@@ -19,7 +19,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, methods=["GET", "POST", "OPTIONS"])
 
 # Configurar Firebase
-cred = credentials.Certificate(r"C:\Capstone\Fase 2\Evidencias proyecto\Evidencias de sistema aplicacion base de datos\bels\src\proyecto-bels-firebase-adminsdk-pfhrt-b5cc6ba183.json")
+cred = credentials.Certificate(r"C:\Capstone\Fase 2\Evidencias proyecto\Evidencias de sistema aplicacion base de datos\bels\src\proyecto-bels-firebase-adminsdk-pfhrt-ec4a1563e2.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -102,6 +102,7 @@ def predict():
                 f"Eres un psicólogo experto en coaching motivacional y conducta humana. "
                 f"La siguiente pregunta pertenece al grupo '{grupo}'. "
                 f"La pregunta es: '{pregunta}' y el puntaje obtenido es {valor} de un máximo de 4. "
+                f"Un puntaje de 1 significa total imposibilidad de realizar la actividad. Un puntaje de 4 significa total posibilidad para realizar la actividad "
                 f"Proporciona una única recomendación concisa y específica para mejorar esta área. "
                 f"La recomendación debe ser una acción práctica que la persona pueda marcar como 'completada' al final del día. "
                 f"Evita recomendaciones generales o abstractas. Si el puntaje es igual a 4, responde: '¡Felicitaciones! Has alcanzado el puntaje máximo, sigue así.' "

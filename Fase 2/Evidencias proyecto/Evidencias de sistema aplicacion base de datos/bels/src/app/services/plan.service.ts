@@ -38,9 +38,10 @@ export class PlanService {
     return `${usuarioIdDocumento}${planNumberFormatted}`;
   }
 
-  // Método para guardar el plan de trabajo en Firebase
-  async guardarPlanTrabajoGrupo(planTrabajo: any): Promise<void> {
-    const { idPlan } = planTrabajo;
-    await this.firestore.collection('PlanesTrabajo').doc(idPlan).set(planTrabajo);
-  }
+ // Método para guardar el plan de trabajo en Firebase
+async guardarPlanTrabajoGrupo(planTrabajo: any): Promise<void> {
+  const { idPlan } = planTrabajo;
+  await this.firestore.collection('PlanesTrabajo').doc(idPlan).set(planTrabajo, { merge: true });
+}
+
 }
