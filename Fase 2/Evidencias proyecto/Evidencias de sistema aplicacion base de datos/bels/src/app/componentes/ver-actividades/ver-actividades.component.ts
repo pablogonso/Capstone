@@ -7,12 +7,12 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['./ver-actividades.component.scss'],
 })
 export class VerActividadesComponent implements OnInit {
-  @Input() categoria: any;
+  @Input() planesTrabajo: any;
 
   constructor(private modalController: ModalController) { }
 
   ngOnInit() {
-    console.log(this.categoria);  // Aquí puedes ver los datos de la categoría
+    console.log(this.planesTrabajo);  // Aquí puedes ver los datos de la categoría
   }
 
   cerrarModal() {

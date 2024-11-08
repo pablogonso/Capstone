@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { actividad, categoria } from '../Modelo/tareas.model';
+import { planesTrabajo, preguntasPlanes } from '../Modelo/tareas.model';
 import { Title } from '@angular/platform-browser';
 import { ModalController, ModalOptions } from '@ionic/angular';
 import { VerActividadesComponent } from '../componentes/ver-actividades/ver-actividades.component';
+import { FirebaseService } from '../services/firebase.service';
+
 
 
 
@@ -17,15 +19,42 @@ import { VerActividadesComponent } from '../componentes/ver-actividades/ver-acti
 
 export class PlanDeTrabajoPage implements OnInit {
 
-public categorias:  categoria[] =[
+  public planesTrabajos: planesTrabajo[] = [];
+
+
+
+ constructor( private modalController : ModalController, private firebaseService: FirebaseService ) { }
+
+ ngOnInit() {
+  // Llamar a Firebase para obtener los campos idGrupo y plan
+  this.firebaseService.getPlanTrabajo('xm6m5d7u1JSs74l4HbntvdmGkea2001x').subscribe(data => {
+    this.planesTrabajos = [
+      {
+        idGrupo: data.idGrupo,
+        titulo: "Autocuidado",
+        descripcion: "Incluye hábitos como una buena alimentación, ejercicio, descanso y gestión del estrés.",
+        preguntasPlanes: data.preguntasPlanes.map(p => ({ plan: p.plan, completo: false }))
+      },
+      // Puedes agregar más categorías si es necesario
+    ];
+    console.log(`idGrupo: ${data.idGrupo}, preguntasPlanes:`, data.preguntasPlanes);
+  });
+}
+
+
+
+
+
+
+/*public categorias:  categoria[] =[
 
     {
       id: '1',
       titulo: "Autocuidado",
-    descripcion: "Incluye hábitos como una buena alimentación, ejercicio, descanso y gestión del estrés.",
+      descripcion: "Incluye hábitos como una buena alimentación, ejercicio, descanso y gestión del estrés.",
       actividad :[
 
-        { nombre: 'Bañarse', completo: false },
+        { nombre:   'asd', completo: false },
         { nombre: 'Actividad 2' , completo : false},
         { nombre: 'Actividad 3' , completo : false}
       ]
@@ -74,19 +103,16 @@ public categorias:  categoria[] =[
 
 ] 
 
+*/
+
+ 
+ 
 
 
-  constructor( private modalController : ModalController,) { }
-
-
-
-  ngOnInit() {}
-
-
-  obtenerPorcentaje(categoria : categoria)
+ obtenerPorcentaje(planesTrabajo : planesTrabajo)
   {
-    let actividadCompletado = categoria.actividad.filter(actividad => actividad.completo).length;
-    let totalActividad = categoria.actividad.length;
+    let actividadCompletado = planesTrabajo. preguntasPlanes.filter( preguntasPlanes =>  preguntasPlanes.completo).length;
+    let totalActividad = planesTrabajo. preguntasPlanes.length;
     let porcentaje = (100 / totalActividad) * actividadCompletado
 
     return parseInt (porcentaje.toString())
@@ -112,16 +138,17 @@ public categorias:  categoria[] =[
   }
 
 
-  verTarea(categoria?: categoria) {
+  verTarea(planesTrabajo?: planesTrabajo) {
     this.presentModal({
       component: VerActividadesComponent,
-      componentProps: { categoria }
+      componentProps: { planesTrabajo }
     });
   }
-
-
-
 }
+
+
+
+
 
 
     

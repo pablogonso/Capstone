@@ -10,10 +10,7 @@
 </ion-header>
 
 <ion-content>
-  
-  
   <ion-card>
-
     <ion-card-content class="card">
       <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
         <ion-item>
@@ -26,7 +23,6 @@
           <ion-input class="custom-input" type="password" [(ngModel)]="password" name="password" required></ion-input>
         </ion-item>        
 
-<<<<<<< HEAD
         <ion-button expand="full" type="submit" [disabled]="!loginForm.form.valid">Iniciar Sesión</ion-button>
       </form>
     </ion-card-content>
@@ -36,14 +32,3 @@
   <ion-button expand="full" (click)="goToRegister()">Crear cuenta</ion-button>
   <ion-button expand="block" fill="outline" (click)="recuperarContrasena()">¿Olvidaste tu contraseña?</ion-button>
 </ion-content>
-=======
-        <ion-button class="sesion" expand="full" type="submit" [disabled]="!loginForm.form.valid">Iniciar Sesión</ion-button>
-        <ion-button class="cuenta" expand="full" (click)="goToRegister()">Crear cuenta</ion-button>
-        <ion-button expand="full" fill="clear" (click)="recuperarContrasena()" class="link-button">
-          ¿Olvidaste tu contraseña?
-        </ion-button>
-              </form>
-    </ion-card-content>
-  </ion-card>
-</ion-content>
->>>>>>> 49232604a39bce03bd4e4cac8a1431788a856c76
