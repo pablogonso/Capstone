@@ -12,6 +12,7 @@ export class RealizarTestPage implements OnInit {
   preguntas: any[] = [];
   indiceActual: number = 0;
   grupoActivo: string = "Autocuidado";
+  respuestasId: string = ''; // Declara respuestasId aquí
 
   constructor(private router: Router, private belsService: BelsService, private firebaseService: FirebaseService) {}
 
@@ -87,25 +88,34 @@ export class RealizarTestPage implements OnInit {
       valor: pregunta.valor,
       estado: pregunta.estado
     }));
-
+  
     const grupo = this.grupoActivo;
     const usuarioIdDocumento = await this.obtenerIdUsuarioActual();
-
+  
     if (!usuarioIdDocumento) {
       console.error("No se pudo obtener el ID de usuario actual para guardar las respuestas.");
       return;
     }
-
+  
     try {
-      await this.firebaseService.guardarRespuestasGrupo(usuarioIdDocumento, grupo, respuestasArray);
-      console.log("Respuestas guardadas correctamente.");
-      
+      // Genera el ID personalizado autoincrementable
+      const idPersonalizado = await this.firebaseService.generarIdRespuesta(usuarioIdDocumento);
+  
+      // Guarda las respuestas en Firebase usando el ID personalizado
+      await this.firebaseService.guardarRespuestasGrupoConId(usuarioIdDocumento, grupo, respuestasArray, idPersonalizado);
+      console.log(`Respuestas guardadas en Firebase con ID: ${idPersonalizado}`);
+  
+      // Guarda el ID en respuestasId y en localStorage para usarlo en plan-pruebas-langchain
+      this.respuestasId = idPersonalizado;
+      localStorage.setItem('respuestasId', this.respuestasId);
+  
       // Redirige a plan-pruebas-langchain después de guardar las respuestas exitosamente
       this.router.navigate(['/plan-pruebas-langchain']);
     } catch (error) {
       console.error('Error al enviar las respuestas:', error);
     }
   }
+  
 
   async verificarProgreso() {
     const puntajeMaximo = this.obtenerPuntajeMaximoPorGrupo(this.grupoActivo);

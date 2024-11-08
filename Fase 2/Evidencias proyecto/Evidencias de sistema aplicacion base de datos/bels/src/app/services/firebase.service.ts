@@ -28,41 +28,42 @@ export class FirebaseService {
     return snapshot.docs[0].id;
   }
 
-  // Obtener el último test guardado para un usuario específico basado en el ID de usuario en el nombre del documento
   // Método para obtener el último test guardado para un usuario específico basado en el ID de usuario en el nombre del documento
-async obtenerUltimoTestGuardado(usuarioIdDocumento: string): Promise<any> {
-  try {
+  async obtenerUltimoTestGuardado(usuarioIdDocumento: string): Promise<any> {
+    try {
       const snapshot = await this.firestore.collection('Respuestas', ref =>
-          ref.where('id', '>=', usuarioIdDocumento + '000') // Filtra usando el prefijo exacto del usuario
-             .where('id', '<=', usuarioIdDocumento + '\uf8ff') // Limita el rango para solo incluir IDs del usuario actual
-             .orderBy('id', 'desc') // Ordena en orden descendente para traer el ID más alto
-             .limit(1) // Obtiene solo el último documento
+        ref.where('id', '>=', usuarioIdDocumento + '000') // Filtra usando el prefijo exacto del usuario
+           .where('id', '<=', usuarioIdDocumento + '\uf8ff') // Limita el rango para solo incluir IDs del usuario actual
+           .orderBy('id', 'desc') // Ordena en orden descendente para traer el ID más alto
+           .limit(1) // Obtiene solo el último documento
       ).get().toPromise();
 
       if (snapshot && !snapshot.empty) {
-          const ultimoTestDoc = snapshot.docs[0];
-          console.log(`ID del último test encontrado para el usuario ${usuarioIdDocumento}: ${ultimoTestDoc.id}`);
-          return ultimoTestDoc.data();  // Retorna los datos del último documento encontrado
+        const ultimoTestDoc = snapshot.docs[0];
+        console.log(`ID del último test encontrado para el usuario ${usuarioIdDocumento}: ${ultimoTestDoc.id}`);
+        return ultimoTestDoc.data();  // Retorna los datos del último documento encontrado
       } else {
-          console.warn(`No se encontró un test guardado para el usuario: ${usuarioIdDocumento}`);
-          return null;
+        console.warn(`No se encontró un test guardado para el usuario: ${usuarioIdDocumento}`);
+        return null;
       }
-  } catch (error) {
+    } catch (error) {
       console.error(`Error al obtener el último test guardado para el usuario ${usuarioIdDocumento}:`, error);
       return null;
+    }
   }
-}
 
   // Guardar respuestas como un nuevo documento en Firebase usando un ID de respuesta único
-  async guardarRespuestasGrupo(usuarioIdDocumento: string, grupo: string, respuestas: any[]): Promise<void> {
-    const idRespuesta = await this.generarIdRespuesta(usuarioIdDocumento);
-    await this.firestore.collection('Respuestas').doc(idRespuesta).set({
-      id: idRespuesta,
-      grupo: grupo,
-      respuestas: respuestas
+  async guardarRespuestasGrupo(usuarioId: string, grupo: string, respuestasArray: any[]) {
+    const respuestasRef = this.firestore.collection('Respuestas').doc(); // Creamos una referencia a un nuevo documento
+    await respuestasRef.set({
+      usuarioId,
+      grupo,
+      respuestas: respuestasArray,
+      timestamp: new Date()
     });
-    console.log(`Respuestas guardadas correctamente con ID: ${idRespuesta}`);
+    return { id: respuestasRef.ref.id }; // Devuelve el ID del documento correctamente
   }
+  
 
   // Generar un ID único de respuesta basado en el ID del usuario
   async generarIdRespuesta(usuarioIdDocumento: string): Promise<string> {
@@ -119,4 +120,28 @@ async obtenerUltimoTestGuardado(usuarioIdDocumento: string): Promise<any> {
       return [];
     }
   }
+
+  // Obtener respuestas por ID de documento
+  async obtenerRespuestasPorId(respuestasId: string): Promise<any[]> {
+    const doc = await this.firestore.collection('Respuestas').doc(respuestasId).get().toPromise();
+    if (doc && doc.exists) {
+      const data = doc.data() as { respuestas: any[] };
+      return data.respuestas || [];
+    } else {
+      throw new Error("No se encontró el documento con el ID especificado.");
+    }
+  }
+  
+  async guardarRespuestasGrupoConId(usuarioId: string, grupo: string, respuestasArray: any[], idPersonalizado: string) {
+    const respuestasRef = this.firestore.collection('Respuestas').doc(idPersonalizado); // Usa el ID personalizado como documento
+    await respuestasRef.set({
+      usuarioId,
+      grupo,
+      respuestas: respuestasArray,
+      timestamp: new Date()
+    });
+    return respuestasRef; // Devuelve la referencia del documento
+  }
+  
+
 }
