@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,12 +8,7 @@ import { Observable } from 'rxjs';
 export class FirebaseService {
   constructor(private firestore: AngularFirestore, private afAuth: AngularFireAuth) {}
 
-  // Método para obtener las respuestas desde la colección "Respuestas"
-  getRespuestas(): Observable<any[]> {
-    return this.firestore.collection('Respuestas').valueChanges();
-  }
-
-  // Método para obtener el ID de documento de usuario en "UsuariosRegistrados"
+  // Método para obtener el ID de usuario logueado en Firebase
   async obtenerIdUsuarioDocumento(): Promise<string | null> {
     const user = await this.afAuth.currentUser;
     if (!user) {
@@ -22,7 +16,7 @@ export class FirebaseService {
       return null;
     }
 
-    const snapshot = await this.firestore.collection('UsuariosRegistrados', ref => 
+    const snapshot = await this.firestore.collection('UsuariosRegistrados', ref =>
       ref.where('correo', '==', user.email)
     ).get().toPromise();
 
@@ -34,7 +28,43 @@ export class FirebaseService {
     return snapshot.docs[0].id;
   }
 
-  // Método para generar un ID único de respuesta basado en el ID del usuario y el contador
+  // Obtener el último test guardado para un usuario específico basado en el ID de usuario en el nombre del documento
+  // Método para obtener el último test guardado para un usuario específico basado en el ID de usuario en el nombre del documento
+async obtenerUltimoTestGuardado(usuarioIdDocumento: string): Promise<any> {
+  try {
+      const snapshot = await this.firestore.collection('Respuestas', ref =>
+          ref.where('id', '>=', usuarioIdDocumento + '000') // Filtra usando el prefijo exacto del usuario
+             .where('id', '<=', usuarioIdDocumento + '\uf8ff') // Limita el rango para solo incluir IDs del usuario actual
+             .orderBy('id', 'desc') // Ordena en orden descendente para traer el ID más alto
+             .limit(1) // Obtiene solo el último documento
+      ).get().toPromise();
+
+      if (snapshot && !snapshot.empty) {
+          const ultimoTestDoc = snapshot.docs[0];
+          console.log(`ID del último test encontrado para el usuario ${usuarioIdDocumento}: ${ultimoTestDoc.id}`);
+          return ultimoTestDoc.data();  // Retorna los datos del último documento encontrado
+      } else {
+          console.warn(`No se encontró un test guardado para el usuario: ${usuarioIdDocumento}`);
+          return null;
+      }
+  } catch (error) {
+      console.error(`Error al obtener el último test guardado para el usuario ${usuarioIdDocumento}:`, error);
+      return null;
+  }
+}
+
+  // Guardar respuestas como un nuevo documento en Firebase usando un ID de respuesta único
+  async guardarRespuestasGrupo(usuarioIdDocumento: string, grupo: string, respuestas: any[]): Promise<void> {
+    const idRespuesta = await this.generarIdRespuesta(usuarioIdDocumento);
+    await this.firestore.collection('Respuestas').doc(idRespuesta).set({
+      id: idRespuesta,
+      grupo: grupo,
+      respuestas: respuestas
+    });
+    console.log(`Respuestas guardadas correctamente con ID: ${idRespuesta}`);
+  }
+
+  // Generar un ID único de respuesta basado en el ID del usuario
   async generarIdRespuesta(usuarioIdDocumento: string): Promise<string> {
     const userDoc = await this.firestore.collection('UsuariosRegistrados').doc(usuarioIdDocumento).get().toPromise();
     let contador = 1;
@@ -43,14 +73,12 @@ export class FirebaseService {
       const userData = userDoc.data() as { contadorRespuestas?: number };
       contador = (userData?.contadorRespuestas || 0) + 1;
 
-      // Actualizar el contador en el documento del usuario
       await this.firestore.collection('UsuariosRegistrados').doc(usuarioIdDocumento).update({
         contadorRespuestas: contador
       });
     } else {
-      // Si no existe el campo `contadorRespuestas`, inicializarlo en el documento del usuario
       await this.firestore.collection('UsuariosRegistrados').doc(usuarioIdDocumento).set(
-        { contadorRespuestas: contador }, 
+        { contadorRespuestas: contador },
         { merge: true }
       );
     }
@@ -59,28 +87,7 @@ export class FirebaseService {
     return `${usuarioIdDocumento}${contadorFormatted}`;
   }
 
-  // Guardar respuestas como un nuevo documento en Firebase usando un ID de respuesta único
-  async guardarRespuestasGrupo(usuarioIdDocumento: string, grupo: string, respuestas: any[]): Promise<void> {
-    const idRespuesta = await this.generarIdRespuesta(usuarioIdDocumento);
-
-    // Verificar si el documento ya existe y, en caso afirmativo, crear uno nuevo
-    const docRef = this.firestore.collection('Respuestas').doc(idRespuesta);
-    const docSnapshot = await docRef.get().toPromise();
-
-    if (docSnapshot?.exists) {
-      console.warn(`Documento con ID ${idRespuesta} ya existe, generando un nuevo ID.`);
-      return this.guardarRespuestasGrupo(usuarioIdDocumento, grupo, respuestas); // Llamada recursiva para intentar guardar con un nuevo ID
-    }
-
-    // Guardar en un documento nuevo, evitando merge para evitar sobreescrituras
-    await docRef.set({
-      grupo: grupo,
-      respuestas: respuestas
-    });
-    console.log(`Respuestas guardadas correctamente con ID: ${idRespuesta}`);
-  }
-
-  // Método para obtener respuestas filtradas por grupo activo en la colección 'Respuestas'
+  // Obtener respuestas filtradas por grupo activo en la colección 'Respuestas'
   async getRespuestasPorGrupo(grupoActivo: string): Promise<any[]> {
     console.log(`Intentando obtener respuestas para el grupo: ${grupoActivo}`);
     try {
@@ -113,7 +120,3 @@ export class FirebaseService {
     }
   }
 }
-
-
-
-

@@ -13,10 +13,47 @@ export class RealizarTestPage implements OnInit {
   indiceActual: number = 0;
   grupoActivo: string = "Autocuidado";
 
-  constructor(private router: Router, private belsService: BelsService, private firebaseService: FirebaseService) { }
+  constructor(private router: Router, private belsService: BelsService, private firebaseService: FirebaseService) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    localStorage.removeItem('userId'); 
+    const usuarioIdDocumento = await this.obtenerIdUsuarioActual();
+
+    if (usuarioIdDocumento) {
+      const ultimoTest = await this.firebaseService.obtenerUltimoTestGuardado(usuarioIdDocumento);
+      if (ultimoTest) {
+        console.log(`ID del último test encontrado para el usuario ${usuarioIdDocumento}: ${ultimoTest.id}`);
+        const puntajeTotal = this.obtenerPuntajeMaximoPorGrupo(ultimoTest.grupo);
+        const puntajeObtenido = this.calcularPuntajeTotal(ultimoTest.respuestas);
+
+        if (puntajeObtenido >= puntajeTotal) {
+          console.log(`Puntuación completa en ${ultimoTest.grupo}. Cargando el siguiente grupo.`);
+          this.avanzarAlSiguienteGrupo(ultimoTest.grupo);
+        } else {
+          console.log(`Cargando preguntas del grupo ${ultimoTest.grupo} ya que no se alcanzó el puntaje máximo.`);
+          this.grupoActivo = ultimoTest.grupo;
+        }
+      } else {
+        console.log("No se encontró un test previo, comenzando con el primer grupo.");
+        this.obtenerPreguntasPorGrupo();
+      }
+    } else {
+      console.error("No se pudo obtener el ID del usuario actual.");
+      return;
+    }
+
     this.obtenerPreguntasPorGrupo();
+  }
+
+  async obtenerIdUsuarioActual(): Promise<string | null> {
+    let usuarioIdDocumento = await this.firebaseService.obtenerIdUsuarioDocumento();
+    if (usuarioIdDocumento) {
+      localStorage.setItem('userId', usuarioIdDocumento);
+      return usuarioIdDocumento;
+    } else {
+      console.error("No se pudo obtener el ID del usuario desde Firebase.");
+      return null;
+    }
   }
 
   obtenerPreguntasPorGrupo() {
@@ -45,7 +82,6 @@ export class RealizarTestPage implements OnInit {
   }
 
   async enviarFormulario() {
-    // Crear un array con las respuestas del usuario
     const respuestasArray = this.preguntas.map(pregunta => ({
       pregunta: pregunta.pregunta,
       valor: pregunta.valor,
@@ -53,40 +89,43 @@ export class RealizarTestPage implements OnInit {
     }));
 
     const grupo = this.grupoActivo;
+    const usuarioIdDocumento = await this.obtenerIdUsuarioActual();
 
-    // Obtener ID de usuario desde localStorage o Firebase si no existe
-    let usuarioIdDocumento = localStorage.getItem('userId');
     if (!usuarioIdDocumento) {
-      console.log("ID de usuario no encontrado en localStorage. Intentando obtenerlo desde Firebase.");
-      usuarioIdDocumento = await this.firebaseService.obtenerIdUsuarioDocumento();
-      if (usuarioIdDocumento) {
-        localStorage.setItem('userId', usuarioIdDocumento);
-      } else {
-        console.error("No se pudo obtener el ID de usuario.");
-        return;
-      }
+      console.error("No se pudo obtener el ID de usuario actual para guardar las respuestas.");
+      return;
     }
 
-    // Guardar respuestas en Firebase
     try {
       await this.firebaseService.guardarRespuestasGrupo(usuarioIdDocumento, grupo, respuestasArray);
       console.log("Respuestas guardadas correctamente.");
+      
+      // Redirige a plan-pruebas-langchain después de guardar las respuestas exitosamente
       this.router.navigate(['/plan-pruebas-langchain']);
     } catch (error) {
       console.error('Error al enviar las respuestas:', error);
     }
   }
 
-  verificarProgreso() {
+  async verificarProgreso() {
     const puntajeMaximo = this.obtenerPuntajeMaximoPorGrupo(this.grupoActivo);
-    const puntajeActual = this.obtenerPuntajeActualPorGrupo(this.grupoActivo);
+    const puntajeActual = this.calcularPuntajeTotal(this.preguntas);
 
     console.log(`Puntaje actual: ${puntajeActual}, Puntaje máximo: ${puntajeMaximo}`);
 
     if (puntajeActual >= puntajeMaximo) {
-      console.log(`Puntaje alcanzado para el grupo: ${this.grupoActivo}. Desbloqueando el siguiente grupo.`);
-      this.desbloquearSiguienteGrupo();
+      console.log(`Puntaje alcanzado para el grupo: ${this.grupoActivo}. Guardando puntaje y avanzando al siguiente grupo.`);
+      await this.guardarYAvanzarGrupo();
     }
+  }
+
+  calcularPuntajeTotal(preguntas: any[]): number {
+    return preguntas.reduce((acc: number, pregunta: any) => acc + (parseInt(pregunta.valor, 10) || 0), 0);
+  }
+
+  async guardarYAvanzarGrupo() {
+    await this.enviarFormulario();
+    this.desbloquearSiguienteGrupo();
   }
 
   obtenerPuntajeMaximoPorGrupo(grupo: string): number {
@@ -99,23 +138,21 @@ export class RealizarTestPage implements OnInit {
     }
   }
 
-  obtenerPuntajeActualPorGrupo(grupo: string): number {
-    return this.preguntas
-      .filter(p => p.Grupo === grupo)
-      .reduce((acc, curr) => acc + (parseInt(curr.valor, 10) || 0), 0);
-  }
-
   desbloquearSiguienteGrupo() {
-    if (this.grupoActivo === "Autocuidado") {
-      this.grupoActivo = "Habilidades Comunitarias";
-    } else if (this.grupoActivo === "Habilidades Comunitarias") {
-      this.grupoActivo = "Habilidades Domésticas";
-    } else if (this.grupoActivo === "Habilidades Domésticas") {
-      this.grupoActivo = "Relaciones Sociales";
-    }
-    console.log("Nuevo grupo desbloqueado:", this.grupoActivo);
+    this.avanzarAlSiguienteGrupo(this.grupoActivo);
     this.obtenerPreguntasPorGrupo();
   }
+
+  avanzarAlSiguienteGrupo(grupoActual: string) {
+    if (grupoActual === "Autocuidado") {
+      this.grupoActivo = "Habilidades Domésticas";
+    } else if (grupoActual === "Habilidades Domésticas") {
+      this.grupoActivo = "Habilidades Comunitarias";
+    } else if (grupoActual === "Habilidades Comunitarias") {
+      this.grupoActivo = "Relaciones Sociales";
+    } else {
+      console.log("No hay más grupos para avanzar.");
+    }
+    console.log(`Nuevo grupo desbloqueado: ${this.grupoActivo}`);
+  }
 }
-
-
