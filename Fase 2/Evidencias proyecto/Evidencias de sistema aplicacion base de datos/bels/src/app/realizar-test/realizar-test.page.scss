@@ -1,17 +1,70 @@
+ion-card-title,ion-label{
+  font-size: 26px;
+}
+
+.grupo{
+  font-size: 30px;
+  font-weight: bolder;
+  text-align: center;
+  color: black;
+}
+
+.logo_app{
+  height: 250px;
+  display: flex;
+  margin: auto;
+}
+
+.text{
+  color: #3b82f6;
+  text-align: center;
+}
+
+ion-button{
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  margin: auto;
+  margin-top: 30px;
+}
 .horizontal-radio-group {
-    display: flex;
-    justify-content: space-around; /* Espacio uniforme entre los botones */
-    align-items: center; /* Alinear los botones y los valores verticalmente */
-    width: 100%;
-  }
-  
-  .radio-item {
-    display: flex;
-    flex-direction: column; /* Colocar los botones y los valores en columna */
-    align-items: center; /* Centrar tanto el botón como el valor */
-  }
-  
-  .below-radio {
-    margin-top: 5px; /* Espacio entre el botón de radio y el valor */
-  }
-  
+  display: flex;
+  justify-content: space-evenly; /* Distribuir los elementos de manera uniforme */
+  align-items: center; /* Alinear los botones de radio verticalmente */
+  padding: 20px 0; /* Añadir espacio vertical alrededor del grupo */
+  gap: 20px; /* Espaciado entre cada ítem */
+}
+
+.radio-item {
+  display: flex;
+  flex-direction: column; /* Colocar el botón y el valor en columna */
+  align-items: center; /* Centrar los elementos dentro de cada radio-item */
+  transition: transform 0.2s ease-in-out; /* Añadir una animación suave al pasar el mouse */
+}
+
+.radio-item:hover {
+  transform: scale(1.1); /* Efecto de ampliación al pasar el mouse */
+}
+
+ion-radio {
+  --size: 30px; /* Hacer los botones de radio más grandes */
+  --border-width: 2px; /* Bordes más gruesos para el botón de radio */
+  --border-color: #3b82f6; /* Color de borde azul para hacerlos más visibles */
+  --color-checked: #3b82f6; /* Color de los botones cuando están seleccionados */
+}
+
+.below-radio {
+  margin-top: 8px; /* Espacio entre el botón de radio y el valor */
+  font-size: 16px; /* Tamaño de texto más grande */
+  font-weight: 600; /* Hacer el texto más audaz */
+  color: #4a4a4a; /* Color gris oscuro para el texto */
+  transition: color 0.2s ease; /* Efecto suave para el color */
+}
+
+.radio-item:hover .below-radio {
+  color: #3b82f6; /* Cambiar el color de los valores al pasar el mouse */
+}
+
+ion-radio-group {
+  width: 100%;
+}
