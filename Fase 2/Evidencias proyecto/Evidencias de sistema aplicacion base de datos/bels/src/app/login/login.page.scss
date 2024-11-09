@@ -16,10 +16,7 @@ ion-card-content p {
 ion-button {
   background-color: #3880ff; /* Color del botón */
   color: white; /* Color del texto del botón */
-}
-
-ion-button:hover {
-  background-color: #3171e0; /* Color del botón al pasar el mouse */
+  margin: 20px;
 }
 
 * {
