@@ -5,8 +5,18 @@
 </ion-header>
 
 <ion-content *ngIf="preguntas.length > 0">
+  <ion-title>
+    <!-- Muestra el logo dentro del título -->
+    <img class="logo_app" src="assets/icon/BELS.jpeg" alt="Logo de la aplicación" />
+    <!-- Espacio opcional para el texto adicional -->
+    <p class="text">Basic Everyday Living Skills</p>
+  </ion-title>
+
   <form (ngSubmit)="enviarFormulario()">
+    <!-- Mostrar solo la pregunta si el grupo está activo -->
     <ion-card *ngIf="preguntas[indiceActual].Grupo === grupoActivo; else bloqueado">
+      <p class="grupo">{{ preguntas[indiceActual].Grupo }}</p>
+
       <ion-card-header>
         <ion-card-title>{{ preguntas[indiceActual].pregunta }}</ion-card-title>
       </ion-card-header>
@@ -43,6 +53,8 @@
     <!-- Mostrar botón de enviar solo en la última pregunta -->
     <ion-button expand="full" type="submit" *ngIf="indiceActual === preguntas.length - 1">Enviar Respuestas</ion-button>
   </form>
+
+  
 </ion-content>
 
 <!-- Mostrar mensaje cuando no haya preguntas -->
