@@ -165,12 +165,14 @@ export class PlanPruebasLangchainPage implements OnInit {
             ? "No se generó plan de trabajo debido a que tuvo puntuación perfecta"
             : "Recomendaciones generadas por la IA",
           planCompletado: false,
-          Grupo: this.grupoActivo
+          Grupo: this.grupoActivo,
+          idUsuario: usuarioIdDocumento,  // Agregar el idUsuario en el nivel superior
+          timestamp: new Date() // Agregar el timestamp en el nivel superior
         };
+        
+        await this.planService.guardarPlanTrabajoGrupo(planTrabajo);
 
         this.recomendaciones = planTrabajo;
-
-        await this.planService.guardarPlanTrabajoGrupo(planTrabajo);
 
       } else {
         console.error("No se encontró la predicción en la respuesta del backend.");
@@ -183,7 +185,4 @@ export class PlanPruebasLangchainPage implements OnInit {
 
     this.cargando = false;
   }
-
 }
-
-

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { PlanTrabajo } from 'src/app/models/plan-trabajo.models';
 
 @Injectable({
   providedIn: 'root'
@@ -28,20 +29,20 @@ export class FirebaseService {
     return snapshot.docs[0].id;
   }
 
-  // Método para obtener el último test guardado para un usuario específico basado en el ID de usuario en el nombre del documento
+  // Método modificado para obtener el último test guardado basado en timestamp
   async obtenerUltimoTestGuardado(usuarioIdDocumento: string): Promise<any> {
     try {
-      const snapshot = await this.firestore.collection('Respuestas', ref =>
-        ref.where('id', '>=', usuarioIdDocumento + '000') // Filtra usando el prefijo exacto del usuario
-           .where('id', '<=', usuarioIdDocumento + '\uf8ff') // Limita el rango para solo incluir IDs del usuario actual
-           .orderBy('id', 'desc') // Ordena en orden descendente para traer el ID más alto
-           .limit(1) // Obtiene solo el último documento
+      const snapshot = await this.firestore.collection('Respuestas', ref => 
+        ref.where('usuarioId', '==', usuarioIdDocumento) // Filtrar por usuarioId
+           .orderBy('timestamp', 'desc')                 // Ordenar por timestamp en orden descendente
+           .limit(1)                                     // Obtener solo el más reciente
       ).get().toPromise();
-
+  
       if (snapshot && !snapshot.empty) {
         const ultimoTestDoc = snapshot.docs[0];
+        const data = ultimoTestDoc.data() as Record<string, any>;
         console.log(`ID del último test encontrado para el usuario ${usuarioIdDocumento}: ${ultimoTestDoc.id}`);
-        return ultimoTestDoc.data();  // Retorna los datos del último documento encontrado
+        return { id: ultimoTestDoc.id, ...data }; // Retorna los datos del último documento encontrado
       } else {
         console.warn(`No se encontró un test guardado para el usuario: ${usuarioIdDocumento}`);
         return null;
@@ -52,19 +53,41 @@ export class FirebaseService {
     }
   }
 
+  // Modificado: Obtener el último plan de trabajo basado en timestamp y idUsuario
+  async obtenerUltimoPlanTrabajo(idUsuario: string): Promise<PlanTrabajo | null> {
+    try {
+      const snapshot = await this.firestore.collection('PlanesTrabajo', ref => 
+        ref.where('idUsuario', '==', idUsuario) // Filtrar por idUsuario
+           .orderBy('timestamp', 'desc')       // Ordenar por timestamp en orden descendente
+           .limit(1)                           // Limitar a un solo documento
+      ).get().toPromise();
+
+      if (snapshot && !snapshot.empty) {
+        const data = snapshot.docs[0].data() as PlanTrabajo;
+        data.id = snapshot.docs[0].id; // Agregar el ID del documento
+        return data;
+      } else {
+        console.warn("No se encontró ningún plan de trabajo para el usuario con ID:", idUsuario);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error al obtener el último plan de trabajo:", error);
+      return null;
+    }
+  }
+
   // Guardar respuestas como un nuevo documento en Firebase usando un ID de respuesta único
   async guardarRespuestasGrupo(usuarioId: string, grupo: string, respuestasArray: any[]) {
-    const respuestasRef = this.firestore.collection('Respuestas').doc(); // Creamos una referencia a un nuevo documento
+    const respuestasRef = this.firestore.collection(`Respuestas/${usuarioId}/tests`).doc(); // Crear un nuevo documento en la subcolección de tests
     await respuestasRef.set({
       usuarioId,
       grupo,
       respuestas: respuestasArray,
-      timestamp: new Date()
+      timestamp: new Date()  // Agregar el timestamp
     });
     return { id: respuestasRef.ref.id }; // Devuelve el ID del documento correctamente
   }
   
-
   // Generar un ID único de respuesta basado en el ID del usuario
   async generarIdRespuesta(usuarioIdDocumento: string): Promise<string> {
     const userDoc = await this.firestore.collection('UsuariosRegistrados').doc(usuarioIdDocumento).get().toPromise();
@@ -133,15 +156,13 @@ export class FirebaseService {
   }
   
   async guardarRespuestasGrupoConId(usuarioId: string, grupo: string, respuestasArray: any[], idPersonalizado: string) {
-    const respuestasRef = this.firestore.collection('Respuestas').doc(idPersonalizado); // Usa el ID personalizado como documento
+    const respuestasRef = this.firestore.collection('Respuestas').doc(idPersonalizado);
     await respuestasRef.set({
       usuarioId,
       grupo,
       respuestas: respuestasArray,
-      timestamp: new Date()
-    });
-    return respuestasRef; // Devuelve la referencia del documento
+      timestamp: new Date(),
+      });
+    return respuestasRef;
   }
-  
-
 }

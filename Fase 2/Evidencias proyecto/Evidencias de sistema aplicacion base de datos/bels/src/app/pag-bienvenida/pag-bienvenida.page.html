@@ -14,12 +14,19 @@
     </swiper-slide>
   </swiper-container>
 
+  <!-- Mostrar ID de usuario en la interfaz -->
+  <p *ngIf="idUsuario">Bienvenido, tu ID de usuario es: {{ idUsuario }}</p>
+
   <ion-card>
     <ion-card-content>
-      <ion-button expand="full" routerLink="/instrucciones">Realizar Test</ion-button>
+      <!-- El botón "Realizar Test" estará deshabilitado si el plan no está completo -->
+      <ion-button expand="full" routerLink="/instrucciones" [disabled]="!botonRealizarTestHabilitado">
+        Realizar Test
+      </ion-button>
       <ion-button expand="full" routerLink="/ver-resultados">Ver Resultados</ion-button>
       <ion-button expand="full" routerLink="/plan-de-trabajo">Plan de Trabajo</ion-button>
       <ion-button expand="full" (click)="logout()">Cerrar sesión</ion-button>
     </ion-card-content>
   </ion-card>
 </ion-content>
+

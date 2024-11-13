@@ -10,7 +10,7 @@ ion-card-title,ion-label{
 }
 
 .logo_app{
-  height: 250px;
+  height: 150px;
   display: flex;
   margin: auto;
 }
@@ -67,4 +67,16 @@ ion-radio {
 
 ion-radio-group {
   width: 100%;
+}
+
+ion-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 10;
+  padding-bottom: 25px; /* Añade un margen inferior */
+}
+
+ion-content {
+  --padding-bottom: 80px; /* Deja espacio en la parte inferior para el footer */
 }

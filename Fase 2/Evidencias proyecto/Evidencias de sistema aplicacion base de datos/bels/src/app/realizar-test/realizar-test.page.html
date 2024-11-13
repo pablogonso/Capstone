@@ -46,13 +46,19 @@
       </ion-card>
     </ng-template>
 
-    <!-- Botones de navegación -->
-    <ion-button expand="full" (click)="siguiente()" [disabled]="indiceActual === preguntas.length - 1">Siguiente</ion-button>
-    <ion-button expand="full" (click)="anterior()" [disabled]="indiceActual === 0">Anterior</ion-button>
-
-    <!-- Mostrar botón de enviar solo en la última pregunta -->
-    <ion-button expand="full" type="submit" *ngIf="indiceActual === preguntas.length - 1">Enviar Respuestas</ion-button>
+    
   </form>
+
+  <!-- Pie de página fijo con los botones -->
+  <ion-footer>
+    <ion-toolbar>
+      <!-- Botones de navegación y envío en el footer fijo -->
+      <ion-button expand="full" (click)="siguiente()" [disabled]="indiceActual === preguntas.length - 1">Siguiente</ion-button>
+      <ion-button expand="full" (click)="anterior()" [disabled]="indiceActual === 0">Anterior</ion-button>
+      <ion-button expand="full" type="submit" *ngIf="indiceActual === preguntas.length - 1">Enviar Respuestas</ion-button>
+    </ion-toolbar>
+  </ion-footer>
+  
 
   
 </ion-content>
