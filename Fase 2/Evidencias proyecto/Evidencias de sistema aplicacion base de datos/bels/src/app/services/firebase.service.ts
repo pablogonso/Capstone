@@ -43,31 +43,7 @@ export class FirebaseService {
     }
   }
 
-  // Método modificado para obtener el último test guardado basado en timestamp
-  async obtenerUltimoTestGuardado(usuarioIdDocumento: string): Promise<any> {
-    try {
-      const snapshot = await this.firestore.collection('Respuestas', ref => 
-        ref.where('usuarioId', '==', usuarioIdDocumento) // Filtrar por usuarioId
-           .orderBy('timestamp', 'desc')                 // Ordenar por timestamp en orden descendente
-           .limit(1)                                     // Obtener solo el más reciente
-      ).get().toPromise();
-  
-      if (snapshot && !snapshot.empty) {
-        const ultimoTestDoc = snapshot.docs[0];
-        const data = ultimoTestDoc.data() as Record<string, any>;
-        console.log(`ID del último test encontrado para el usuario ${usuarioIdDocumento}: ${ultimoTestDoc.id}`);
-        return { id: ultimoTestDoc.id, ...data }; // Retorna los datos del último documento encontrado
-      } else {
-        console.warn(`No se encontró un test guardado para el usuario: ${usuarioIdDocumento}`);
-        return null;
-      }
-    } catch (error) {
-      console.error(`Error al obtener el último test guardado para el usuario ${usuarioIdDocumento}:`, error);
-      return null;
-    }
-  }
-
-  // Modificado: Obtener el último plan de trabajo basado en timestamp y idUsuario
+  // Método para obtener el último plan de trabajo basado en timestamp y idUsuario
   async obtenerUltimoPlanTrabajo(idUsuario: string): Promise<PlanTrabajo | null> {
     try {
       const snapshot = await this.firestore.collection('PlanesTrabajo', ref => 
@@ -77,8 +53,10 @@ export class FirebaseService {
       ).get().toPromise();
 
       if (snapshot && !snapshot.empty) {
-        const data = snapshot.docs[0].data() as PlanTrabajo;
-        data.id = snapshot.docs[0].id; // Agregar el ID del documento
+        const ultimoPlanDoc = snapshot.docs[0];
+        const data = ultimoPlanDoc.data() as PlanTrabajo;
+        data.id = ultimoPlanDoc.id; // Agregar el ID del documento para referencia futura
+        console.log(`Último plan de trabajo obtenido para el usuario ${idUsuario}:`, data);
         return data;
       } else {
         console.warn("No se encontró ningún plan de trabajo para el usuario con ID:", idUsuario);
@@ -90,16 +68,18 @@ export class FirebaseService {
     }
   }
 
-  // Guardar respuestas como un nuevo documento en Firebase usando un ID de respuesta único
+  // Otros métodos (sin cambios)...
+
+  // Método para guardar respuestas en Firebase usando un ID de respuesta único
   async guardarRespuestasGrupo(usuarioId: string, grupo: string, respuestasArray: any[]) {
-    const respuestasRef = this.firestore.collection(`Respuestas/${usuarioId}/tests`).doc(); // Crear un nuevo documento en la subcolección de tests
+    const respuestasRef = this.firestore.collection(`Respuestas/${usuarioId}/tests`).doc();
     await respuestasRef.set({
       usuarioId,
       grupo,
       respuestas: respuestasArray,
-      timestamp: new Date()  // Agregar el timestamp
+      timestamp: new Date()
     });
-    return { id: respuestasRef.ref.id }; // Devuelve el ID del documento correctamente
+    return { id: respuestasRef.ref.id };
   }
   
   // Generar un ID único de respuesta basado en el ID del usuario
@@ -176,7 +156,7 @@ export class FirebaseService {
       grupo,
       respuestas: respuestasArray,
       timestamp: new Date(),
-      });
+    });
     return respuestasRef;
   }
 
