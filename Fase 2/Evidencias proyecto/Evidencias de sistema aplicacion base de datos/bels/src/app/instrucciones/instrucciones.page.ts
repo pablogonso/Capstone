@@ -19,18 +19,18 @@ export class InstruccionesPage {
       const usuarioIdDocumento = await this.firebaseService.obtenerIdUsuarioDocumento();
       if (!usuarioIdDocumento) return;
 
-      // Obtener el último test guardado para el usuario ordenado por timestamp
-      const ultimoTest = await this.firebaseService.obtenerUltimoTestGuardado(usuarioIdDocumento);
+      // Obtener el último plan de trabajo guardado para el usuario ordenado por timestamp
+      const ultimoPlan = await this.firebaseService.obtenerUltimoPlanTrabajo(usuarioIdDocumento);
 
-      if (ultimoTest) {
-        console.log(`Último test encontrado para el usuario ${usuarioIdDocumento}:`, ultimoTest);
+      if (ultimoPlan) {
+        console.log(`Último plan de trabajo encontrado para el usuario ${usuarioIdDocumento}:`, ultimoPlan);
 
-        // Verificar si la puntuación del último test es perfecta
-        const puntuacionPerfecta = this.verificarPuntuacionPerfecta(ultimoTest.respuestas);
+        // Verificar si el plan tiene puntuación perfecta o está completado
+        const puntuacionPerfecta = this.verificarPuntuacionPerfecta(ultimoPlan['preguntasPlanes']);
         
-        if (puntuacionPerfecta) {
+        if (puntuacionPerfecta || ultimoPlan['planCompletado']) {
           // Determinar el grupo actual y calcular el siguiente grupo
-          const grupoActual = ultimoTest.grupo; // Usar el grupo desde el nivel superior del documento
+          const grupoActual = ultimoPlan['Grupo']; // Usar el grupo desde el nivel superior del documento
           const siguienteGrupo = this.obtenerSiguienteGrupo(grupoActual);
 
           console.log(`Grupo actual: ${grupoActual}, Siguiente grupo: ${siguienteGrupo}`);
@@ -43,8 +43,8 @@ export class InstruccionesPage {
           console.warn("El puntaje no es perfecto. Revisar resultados.");
         }
       } else {
-        // Si no se encontró un test previo, redirigir al test del primer grupo "Autocuidado"
-        console.warn("No se encontró un test guardado previamente. Comenzando con el grupo 'Autocuidado'.");
+        // Si no se encontró un plan previo, redirigir al test del primer grupo "Autocuidado"
+        console.warn("No se encontró un plan guardado previamente. Comenzando con el grupo 'Autocuidado'.");
         this.navCtrl.navigateForward(`/realizar-test`, {
           queryParams: { grupo: 'Autocuidado' }
         });
@@ -54,9 +54,9 @@ export class InstruccionesPage {
     }
   }
 
-  // Verifica si todas las respuestas tienen puntuación perfecta (asumiendo 4 como perfecto)
-  verificarPuntuacionPerfecta(respuestas: any[]): boolean {
-    return respuestas.every((respuesta: any) => respuesta.valor === 4);
+  // Verifica si todas las respuestas en el plan de trabajo tienen puntuación perfecta (asumiendo 4 como perfecto)
+  verificarPuntuacionPerfecta(preguntasPlanes: any[]): boolean {
+    return preguntasPlanes.every((pregunta: any) => pregunta.puntaje === 4);
   }
 
   // Obtiene el siguiente grupo basado en el grupo actual

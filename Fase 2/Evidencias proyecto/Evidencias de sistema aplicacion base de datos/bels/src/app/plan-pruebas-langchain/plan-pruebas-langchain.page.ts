@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import axios from 'axios';
 import { FirebaseService } from '../services/firebase.service';
 import { PlanService } from '../services/plan.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-plan-pruebas-langchain',
@@ -13,13 +14,23 @@ export class PlanPruebasLangchainPage implements OnInit {
   pais = "Chile";
   recomendaciones: any = {};
   cargando: boolean = false;
-  grupoActivo: string = "Autocuidado";
+  grupoActivo: string = ''; // Quitar el valor predeterminado "Autocuidado"
   buttonDisabled: boolean = false;
   respuestasId: string = '';
 
-  constructor(private firebaseService: FirebaseService, private planService: PlanService) {}
+  constructor(
+    private firebaseService: FirebaseService,
+    private planService: PlanService,
+    private route: ActivatedRoute // Importar ActivatedRoute para obtener queryParams
+  ) {}
 
   async ngOnInit() {
+    // Obtener el grupo desde queryParams
+    this.route.queryParams.subscribe(params => {
+      this.grupoActivo = params['grupo'] || this.grupoActivo; // Utilizar el grupo de los queryParams
+      console.log("Grupo activo en plan-pruebas-langchain:", this.grupoActivo);
+    });
+
     this.respuestasId = localStorage.getItem('respuestasId') || '';
     if (!this.respuestasId) {
       console.error("No se encontró el ID de respuestas en localStorage.");
@@ -31,7 +42,7 @@ export class PlanPruebasLangchainPage implements OnInit {
     this.cargando = true;
     this.buttonDisabled = true;
     console.log(`Iniciando generación de respuestas para el grupo activo: ${this.grupoActivo}`);
-
+  
     try {
       const respuestasFirebase = await this.firebaseService.obtenerRespuestasPorId(this.respuestasId);
       if (!respuestasFirebase || respuestasFirebase.length === 0) {
@@ -40,31 +51,32 @@ export class PlanPruebasLangchainPage implements OnInit {
         this.buttonDisabled = false;
         return;
       }
-
+  
       const esPuntuacionPerfecta = respuestasFirebase.every((respuesta: any) => respuesta.puntaje === 4);
       if (esPuntuacionPerfecta) {
         console.log(`El grupo ${this.grupoActivo} tiene puntuación perfecta. Avanzando al siguiente grupo.`);
         this.avanzarAlSiguienteGrupo();
-
+  
+        console.log(`Grupo actualizado a: ${this.grupoActivo}`);
         if (this.grupoActivo === "No hay más grupos") {
           console.log("Todos los grupos han alcanzado puntuación perfecta o no hay más grupos para procesar.");
           this.cargando = false;
           this.buttonDisabled = false;
           return;
         }
-
+  
         await this.generarRespuestas();
         return;
       }
-
+  
       console.log("Respuestas obtenidas desde Firebase para el grupo con puntaje bajo:", respuestasFirebase);
       await this.enviarAlModeloPredictivo(respuestasFirebase);
-
+  
     } catch (error) {
       console.error("Error al generar las respuestas:", error);
       this.buttonDisabled = false;
     }
-
+  
     this.cargando = false;
   }
 
@@ -96,7 +108,7 @@ export class PlanPruebasLangchainPage implements OnInit {
           pregunta: recomendacion.pregunta,
           plan: recomendacion.recomendacion,
           puntaje: recomendacion.valor,
-          horaRecomendacion: this.extraerHoraDeRecomendacion(recomendacion.recomendacion) // Extraer hora de la recomendación
+          horaRecomendacion: this.extraerHoraDeRecomendacion(recomendacion.recomendacion)
         }));
 
         const usuarioIdDocumento = await this.firebaseService.obtenerIdUsuarioDocumento();
@@ -137,7 +149,7 @@ export class PlanPruebasLangchainPage implements OnInit {
         };
 
         await this.planService.guardarPlanTrabajoGrupo(planTrabajo);
-        console.log(`Plan de trabajo guardado con ID: ${idPlan}`, planTrabajo); // Log del ID de plan de trabajo
+        console.log(`Plan de trabajo guardado con ID: ${idPlan}`, planTrabajo);
 
         this.recomendaciones = planTrabajo;
 
@@ -153,7 +165,6 @@ export class PlanPruebasLangchainPage implements OnInit {
     this.cargando = false;
   }
 
-  // Método para extraer la hora en formato hh:mm:ss de una recomendación
   private extraerHoraDeRecomendacion(recomendacion: string): string | null {
     const horaRegex = /\b\d{2}:\d{2}:\d{2}\b/;
     const match = recomendacion.match(horaRegex);
