@@ -1,17 +1,22 @@
-export interface categoria{
+export interface planesTrabajo {
 
-    id: string,
-    titulo: string,
-    descripcion : string,
-    actividad : actividad []
 
-     
+    titulo: string
+    // nombre: string,
+    descripcion: string,
+    idGrupo: string,
+    // idPlan: string,
+    preguntasPlanes: preguntasPlanes[];
+
+
 }
 
-export interface actividad{
+export interface preguntasPlanes {
 
-    nombre : string,
-    completo :  boolean
+    plan: string,
+    completo: boolean,
+    //  pregunta :  string,
+    //   puntaje : number,
 
 }
 

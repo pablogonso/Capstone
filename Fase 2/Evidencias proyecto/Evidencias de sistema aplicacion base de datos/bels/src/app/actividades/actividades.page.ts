@@ -1,40 +1,17 @@
-import { Component, NgModule, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Title } from '@angular/platform-browser';
-import { ModalController, ModalOptions } from '@ionic/angular';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { BelsService } from '../services/question.service'; // Asegúrate de que la ruta es correcta
-import { AngularFirestore } from '@angular/fire/compat/firestore'; // Importar AngularFirestore para trabajar con Firebase
-import { Router } from '@angular/router';
 
+import { ActividadesComponent } from './actividades.component';
 
-
-
-@Component({
-  selector: 'app-actividades',
-  templateUrl: './actividades.page.html',
-  styleUrls: ['./actividades.page.scss'],
+@NgModule({
+  declarations: [ActividadesComponent], // Declara los componentes que pertenecen a este módulo
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule
+  ],
+  exports: [ActividadesComponent] // Exporta los componentes que quieras usar fuera de este módulo
 })
-
-
-
-export class ActividadesPage implements OnInit {
-  
-
-  constructor(private router: Router, private firestore: AngularFirestore) { }
-
-  ngOnInit() {
-
-    
-  }
-
-
-  
-  
-
-  
-}    
-
-
-
-
+export class ActividadesModule { }
