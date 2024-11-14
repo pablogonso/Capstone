@@ -23,11 +23,12 @@
     <ion-card-content>
 
     <p> El Test Bels esta diseñado para medir tus habilidades basicas del diario vivir. Contesta este test de manera seria y responsable no te tomará mas de 3 minutos.</p>
-    <p> Selecciona la opción que mas coincida contigo. Selecciona de 1 al 4 siendo 1 el valor que representa la mayor dificultad para realizar la actividad y 5 el valor que representa que no tienes problemas para realizarla.</p>
-    <p> En el caso que no puedas realizar la actividad de la pregunta por que no tienes la posibilidad selecciona la opción 0.</p>        
+    <p> Selecciona la opción que mas coincida contigo. Selecciona un valor del 1 al 4 siendo 1 el valor que representa la mayor dificultad para realizar la actividad y 4 el valor que representa que no tienes problemas para realizarla.</p>
+    <p> En el caso que no puedas realizar la actividad de la pregunta selecciona la opción 0.</p>        
 
 
-  <ion-button expand="full" routerLink="/realizar-test">Realizar Test</ion-button>
+    <ion-button expand="full" (click)="onRealizarTestClick()">Realizar Test</ion-button>
+
 </ion-card-content>
 </ion-card>
 

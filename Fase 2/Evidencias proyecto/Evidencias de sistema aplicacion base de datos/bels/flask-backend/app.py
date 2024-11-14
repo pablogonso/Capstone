@@ -103,13 +103,12 @@ def predict():
                 f"La siguiente pregunta pertenece al grupo '{grupo}'. "
                 f"La pregunta es: '{pregunta}' y el puntaje obtenido es {valor} de un máximo de 4. "
                 f"Un puntaje de 1 significa total imposibilidad de realizar la actividad. Un puntaje de 4 significa total posibilidad para realizar la actividad "
-                f"Proporciona una única recomendación concisa y específica para mejorar esta área. "
+                f"Proporciona una única recomendación concisa y específica para mejorar esta área que incluya una y solo una hora específica para esa recomendación. La hora debe estar en formato hh:mm:ss (formato de 24 horas). "
                 f"La recomendación debe ser una acción práctica que la persona pueda marcar como 'completada' al final del día. "
                 f"Evita recomendaciones generales o abstractas. Si el puntaje es igual a 4, responde: '¡Felicitaciones! Has alcanzado el puntaje máximo, sigue así.' "
                 f"No incluyas la palabra 'Recomendación' al inicio de la recomendación."
                 f"Mientras más bajo sea el puntaje, la recomendación debe ser de más impacto. Mientras más alto sea el puntaje, la recomendación puede ser más relajada"
-            )
-
+                )
 
             # Configurar el mensaje para el modelo de lenguaje
             messages = [

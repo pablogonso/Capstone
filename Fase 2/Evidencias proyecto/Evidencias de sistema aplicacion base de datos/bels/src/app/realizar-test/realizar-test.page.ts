@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BelsService } from '../services/question.service';
 import { FirebaseService } from '../services/firebase.service';
-import { Router } from '@angular/router';
-
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-realizar-test',
@@ -12,39 +11,31 @@ import { Router } from '@angular/router';
 export class RealizarTestPage implements OnInit {
   preguntas: any[] = [];
   indiceActual: number = 0;
-  grupoActivo: string = "Autocuidado";
-  respuestasId: string = ''; // Declara respuestasId aquí
-  guardando: boolean = false; // Nueva variable de control
-  botonRealizarTestHabilitado: boolean = false; // Nueva variable de control
+  grupoActivo: string = ''; // Declarado sin valor inicial para establecerlo desde los queryParams
+  respuestasId: string = '';
+  guardando: boolean = false;
 
-  constructor(private router: Router, private belsService: BelsService, private firebaseService: FirebaseService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private belsService: BelsService,
+    private firebaseService: FirebaseService
+  ) {}
 
   async ngOnInit() {
-    localStorage.removeItem('userId'); 
-    const usuarioIdDocumento = await this.obtenerIdUsuarioActual();
+    // Obtener el grupo desde los queryParams
+    this.route.queryParams.subscribe(params => {
+      this.grupoActivo = params['grupo'] || 'Autocuidado'; // Usa el grupo del queryParams o "Autocuidado" como valor predeterminado
+      console.log("Grupo activo establecido desde queryParams:", this.grupoActivo);
+      this.obtenerPreguntasPorGrupo(); // Cargar las preguntas basadas en el grupo recibido
+    });
 
-    if (usuarioIdDocumento) {
-      const ultimoPlan = await this.firebaseService.obtenerUltimoPlanTrabajo(usuarioIdDocumento);
-      
-      if (ultimoPlan) {
-        console.log(`Último plan de trabajo encontrado para el usuario ${usuarioIdDocumento}: ${ultimoPlan.id || 'sin ID'}`);
-        
-        // Control de acceso en base a planCompletado
-        this.botonRealizarTestHabilitado = ultimoPlan.planCompletado === true;
-        if (!this.botonRealizarTestHabilitado) {
-          console.log("El plan de trabajo anterior no está completado. Acceso al test bloqueado.");
-          return;
-        }
-      } else {
-        console.log("No se encontró un plan de trabajo previo, comenzando con el primer grupo.");
-        this.botonRealizarTestHabilitado = true;
-      }
-    } else {
+    // Obtener el ID del usuario actual
+    const usuarioIdDocumento = await this.obtenerIdUsuarioActual();
+    if (!usuarioIdDocumento) {
       console.error("No se pudo obtener el ID del usuario actual.");
       return;
     }
-
-    this.obtenerPreguntasPorGrupo();
   }
 
   async obtenerIdUsuarioActual(): Promise<string | null> {
@@ -80,12 +71,12 @@ export class RealizarTestPage implements OnInit {
 
   actualizarEstado(indice: number) {
     this.preguntas[indice].estado = true;
-    this.verificarProgreso(); // Verifica el progreso solo si todas las preguntas han sido respondidas
+    this.verificarProgreso();
   }
 
   async enviarFormulario() {
-    if (this.guardando) return; // Si ya está en proceso de guardado, no hacer nada
-    this.guardando = true; // Activar el estado de guardado
+    if (this.guardando) return;
+    this.guardando = true;
 
     const respuestasArray = this.preguntas.map(pregunta => ({
       pregunta: pregunta.pregunta,
@@ -98,31 +89,27 @@ export class RealizarTestPage implements OnInit {
 
     if (!usuarioIdDocumento) {
       console.error("No se pudo obtener el ID de usuario actual para guardar las respuestas.");
-      this.guardando = false; // Desactivar el estado de guardado en caso de error
+      this.guardando = false;
       return;
     }
 
     try {
-      // Genera el ID personalizado autoincrementable
       const idPersonalizado = await this.firebaseService.generarIdRespuesta(usuarioIdDocumento);
       console.log(`ID personalizado generado: ${idPersonalizado}`);
       
-      // Guarda las respuestas en Firebase usando el ID personalizado
       await this.firebaseService.guardarRespuestasGrupoConId(usuarioIdDocumento, grupo, respuestasArray, idPersonalizado);
       console.log(`Respuestas guardadas en Firebase con ID: ${idPersonalizado}`);
 
-      // Guarda el ID en respuestasId y en localStorage para usarlo en plan-pruebas-langchain
       this.respuestasId = idPersonalizado;
       localStorage.setItem('respuestasId', this.respuestasId);
     } catch (error) {
       console.error('Error al enviar las respuestas:', error);
     } finally {
-      this.guardando = false; // Desactivar el estado de guardado después de completar
+      this.guardando = false;
     }
   }
 
   async verificarProgreso() {
-    // Verifica que todas las preguntas estén respondidas antes de evaluar el puntaje
     const todasRespondidas = this.preguntas.every(pregunta => pregunta.estado === true);
     if (!todasRespondidas) return;
 
@@ -133,11 +120,11 @@ export class RealizarTestPage implements OnInit {
 
     if (puntajeActual >= puntajeMaximo) {
       console.log(`Puntaje máximo alcanzado para el grupo: ${this.grupoActivo}. Desbloqueando el siguiente grupo.`);
-      await this.guardarYAvanzarGrupo(); // Desbloquear el siguiente grupo y cargar sus preguntas
+      await this.guardarYAvanzarGrupo();
     } else {
       console.log(`Puntaje insuficiente en el grupo: ${this.grupoActivo}. Redirigiendo a Generar plan de trabajo.`);
-      await this.enviarFormulario(); // Guarda las respuestas
-      this.router.navigate(['/plan-pruebas-langchain']); // Redirige a la generación del plan de trabajo
+      await this.enviarFormulario();
+      this.router.navigate(['/plan-pruebas-langchain']);
     }
   }
 
@@ -147,7 +134,7 @@ export class RealizarTestPage implements OnInit {
 
   async guardarYAvanzarGrupo() {
     await this.enviarFormulario();
-    this.desbloquearSiguienteGrupo(); // Desbloquea y carga el siguiente grupo
+    this.desbloquearSiguienteGrupo();
   }
 
   obtenerPuntajeMaximoPorGrupo(grupo: string): number {
@@ -161,8 +148,8 @@ export class RealizarTestPage implements OnInit {
   }
 
   desbloquearSiguienteGrupo() {
-    this.avanzarAlSiguienteGrupo(this.grupoActivo); // Avanza al siguiente grupo
-    this.obtenerPreguntasPorGrupo(); // Carga preguntas del nuevo grupo
+    this.avanzarAlSiguienteGrupo(this.grupoActivo);
+    this.obtenerPreguntasPorGrupo();
   }
 
   avanzarAlSiguienteGrupo(grupoActual: string) {

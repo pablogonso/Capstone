@@ -29,6 +29,16 @@ export class FirebaseService {
     return snapshot.docs[0].id;
   }
 
+  // Método para guardar un plan de trabajo en Firebase
+  async guardarPlanTrabajo(planTrabajo: PlanTrabajo) {
+    try {
+      await this.firestore.collection('PlanesTrabajo').add(planTrabajo);
+      console.log("Plan de trabajo guardado:", planTrabajo);
+    } catch (error) {
+      console.error("Error al guardar el plan de trabajo:", error);
+    }
+  }
+
   // Método modificado para obtener el último test guardado basado en timestamp
   async obtenerUltimoTestGuardado(usuarioIdDocumento: string): Promise<any> {
     try {

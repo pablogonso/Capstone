@@ -20,7 +20,6 @@ export class PlanPruebasLangchainPage implements OnInit {
   constructor(private firebaseService: FirebaseService, private planService: PlanService) {}
 
   async ngOnInit() {
-    // Obtén el ID de las respuestas del localStorage
     this.respuestasId = localStorage.getItem('respuestasId') || '';
     if (!this.respuestasId) {
       console.error("No se encontró el ID de respuestas en localStorage.");
@@ -31,13 +30,10 @@ export class PlanPruebasLangchainPage implements OnInit {
   async generarRespuestas() {
     this.cargando = true;
     this.buttonDisabled = true;
-
     console.log(`Iniciando generación de respuestas para el grupo activo: ${this.grupoActivo}`);
 
     try {
-      // Obtiene las respuestas usando el ID
       const respuestasFirebase = await this.firebaseService.obtenerRespuestasPorId(this.respuestasId);
-
       if (!respuestasFirebase || respuestasFirebase.length === 0) {
         console.error(`Las respuestas para el grupo ${this.grupoActivo} no son un array o están vacías.`);
         this.cargando = false;
@@ -48,7 +44,6 @@ export class PlanPruebasLangchainPage implements OnInit {
       const esPuntuacionPerfecta = respuestasFirebase.every((respuesta: any) => respuesta.puntaje === 4);
       if (esPuntuacionPerfecta) {
         console.log(`El grupo ${this.grupoActivo} tiene puntuación perfecta. Avanzando al siguiente grupo.`);
-        
         this.avanzarAlSiguienteGrupo();
 
         if (this.grupoActivo === "No hay más grupos") {
@@ -63,7 +58,6 @@ export class PlanPruebasLangchainPage implements OnInit {
       }
 
       console.log("Respuestas obtenidas desde Firebase para el grupo con puntaje bajo:", respuestasFirebase);
-
       await this.enviarAlModeloPredictivo(respuestasFirebase);
 
     } catch (error) {
@@ -75,36 +69,15 @@ export class PlanPruebasLangchainPage implements OnInit {
   }
 
   avanzarAlSiguienteGrupo() {
-    switch (this.grupoActivo) {
-      case "Autocuidado":
-        this.grupoActivo = "Habilidades Domésticas";
-        break;
-      case "Habilidades Domésticas":
-        this.grupoActivo = "Habilidades Comunitarias";
-        break;
-      case "Habilidades Comunitarias":
-        this.grupoActivo = "Relaciones Sociales";
-        break;
-      case "Relaciones Sociales":
-        this.grupoActivo = "No hay más grupos";
-        break;
-      default:
-        console.log("No hay más grupos para avanzar.");
-        this.grupoActivo = "No hay más grupos";
-    }
+    const grupos = ["Autocuidado", "Habilidades Domésticas", "Habilidades Comunitarias", "Relaciones Sociales"];
+    const indexActual = grupos.indexOf(this.grupoActivo);
+    this.grupoActivo = indexActual < grupos.length - 1 ? grupos[indexActual + 1] : "No hay más grupos";
     console.log(`Grupo avanzado a: ${this.grupoActivo}`);
   }
 
   async enviarAlModeloPredictivo(respuestasGrupoActivo: any[]) {
     try {
       console.log("Enviando respuestas al modelo predictivo:", respuestasGrupoActivo);
-
-      if (!respuestasGrupoActivo || respuestasGrupoActivo.length === 0) {
-        console.error("Las respuestas están vacías o no son válidas.");
-        this.cargando = false;
-        this.buttonDisabled = false;
-        return;
-      }
 
       const response = await axios.post('http://127.0.0.1:5000/api/predict', {
         respuestas: respuestasGrupoActivo,
@@ -122,7 +95,8 @@ export class PlanPruebasLangchainPage implements OnInit {
         const preguntasPlanes = response.data.prediccion.map((recomendacion: any) => ({
           pregunta: recomendacion.pregunta,
           plan: recomendacion.recomendacion,
-          puntaje: recomendacion.valor
+          puntaje: recomendacion.valor,
+          horaRecomendacion: this.extraerHoraDeRecomendacion(recomendacion.recomendacion) // Extraer hora de la recomendación
         }));
 
         const usuarioIdDocumento = await this.firebaseService.obtenerIdUsuarioDocumento();
@@ -135,18 +109,10 @@ export class PlanPruebasLangchainPage implements OnInit {
 
         let idGrupo = '';
         switch (this.grupoActivo) {
-          case "Autocuidado":
-            idGrupo = '1';
-            break;
-          case "Habilidades Domésticas":
-            idGrupo = '2';
-            break;
-          case "Habilidades Comunitarias":
-            idGrupo = '3';
-            break;
-          case "Relaciones Sociales":
-            idGrupo = '4';
-            break;
+          case "Autocuidado": idGrupo = '1'; break;
+          case "Habilidades Domésticas": idGrupo = '2'; break;
+          case "Habilidades Comunitarias": idGrupo = '3'; break;
+          case "Relaciones Sociales": idGrupo = '4'; break;
           default:
             console.error("Grupo activo desconocido:", this.grupoActivo);
             this.cargando = false;
@@ -166,11 +132,12 @@ export class PlanPruebasLangchainPage implements OnInit {
             : "Recomendaciones generadas por la IA",
           planCompletado: false,
           Grupo: this.grupoActivo,
-          idUsuario: usuarioIdDocumento,  // Agregar el idUsuario en el nivel superior
-          timestamp: new Date() // Agregar el timestamp en el nivel superior
+          idUsuario: usuarioIdDocumento,
+          timestamp: new Date()
         };
-        
+
         await this.planService.guardarPlanTrabajoGrupo(planTrabajo);
+        console.log(`Plan de trabajo guardado con ID: ${idPlan}`, planTrabajo); // Log del ID de plan de trabajo
 
         this.recomendaciones = planTrabajo;
 
@@ -184,5 +151,12 @@ export class PlanPruebasLangchainPage implements OnInit {
     }
 
     this.cargando = false;
+  }
+
+  // Método para extraer la hora en formato hh:mm:ss de una recomendación
+  private extraerHoraDeRecomendacion(recomendacion: string): string | null {
+    const horaRegex = /\b\d{2}:\d{2}:\d{2}\b/;
+    const match = recomendacion.match(horaRegex);
+    return match ? match[0] : null;
   }
 }
