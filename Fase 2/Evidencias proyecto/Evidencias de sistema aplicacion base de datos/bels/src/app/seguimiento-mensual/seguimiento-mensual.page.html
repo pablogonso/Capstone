@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Seguimiento Mensual</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <!-- Lista principal de días -->
+    <ng-container *ngFor="let dia of dias">
+      <ion-item (click)="toggleDia(dia)">
+        <ion-label>
+          <h2>{{ dia.dia }}</h2>
+          <p>Actividades: {{ dia.completadas.length }} de {{ dia.total }} completadas</p>
+        </ion-label>
+        <ion-icon [name]="dia.expandido ? 'chevron-up-outline' : 'chevron-down-outline'" slot="end"></ion-icon>
+      </ion-item>
+
+      <!-- Sub-lista de actividades -->
+      <ion-list *ngIf="dia.expandido" class="sub-lista">
+        <ion-item-divider>Completadas</ion-item-divider>
+        <ion-item *ngFor="let actividad of dia.completadas">
+          {{ actividad }}
+        </ion-item>
+
+        <ion-item-divider>No Completadas</ion-item-divider>
+        <ion-item *ngFor="let actividad of dia.noCompletadas">
+          {{ actividad }}
+        </ion-item>
+      </ion-list>
+    </ng-container>
+  </ion-list>
+</ion-content>
