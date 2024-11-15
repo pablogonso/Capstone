@@ -25,19 +25,22 @@ export class PlanDeTrabajoPage implements OnInit {
         const ultimoPlan = await this.firebaseService.obtenerUltimoPlanTrabajo(usuarioId);
 
         if (ultimoPlan) {
-          // Accede a las propiedades usando corchetes
+          // Accede a las propiedades usando corchetes e incluye horaRecomendacion
           this.planesTrabajos = [
             {
-              idGrupo: ultimoPlan['idGrupo'], // Cambiado a notación de corchetes
-              titulo: ultimoPlan['Grupo'], // Cambiado a notación de corchetes
-              descripcion:
-                "Incluye hábitos como una buena alimentación, ejercicio, descanso y gestión del estrés.", // Personaliza si es necesario
-              preguntasPlanes: ultimoPlan['preguntasPlanes'].map((p: { plan: string }) => ({
-                plan: p['plan'], // Cambiado a notación de corchetes
+              idGrupo: ultimoPlan['idGrupo'],
+              titulo: ultimoPlan['Grupo'],
+              descripcion: "Incluye hábitos como una buena alimentación, ejercicio, descanso y gestión del estrés.", // Personaliza si es necesario
+              preguntasPlanes: ultimoPlan['preguntasPlanes'].map((p: { plan: string, horaRecomendacion: string }) => ({
+                plan: p['plan'],
+                horaRecomendacion: p['horaRecomendacion'], // Incluimos horaRecomendacion aquí
                 completo: false, // Inicializamos "completo" como false
               })),
             },
           ];
+          
+          // Verificar si `horaRecomendacion` fue traído correctamente
+          console.log("Planes de trabajo con horaRecomendacion:", this.planesTrabajos);
         } else {
           console.warn('No se pudo obtener el último plan de trabajo.');
         }
@@ -63,7 +66,6 @@ export class PlanDeTrabajoPage implements OnInit {
       console.warn('No hay planes de trabajo disponibles para mostrar.');
     }
   }
-
 
   obtenerPorcentaje(planesTrabajo: planesTrabajo): number {
     const actividadesCompletadas = planesTrabajo.preguntasPlanes.filter(

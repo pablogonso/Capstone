@@ -1,18 +1,45 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Actividades</ion-title>
-    
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item *ngFor="let actividad of planesTrabajo?.preguntasPlanes">
+  <!-- Sección Mañana -->
+  <ion-list *ngIf="actividadesManana.length > 0">
+    <ion-item-divider color="light">
+      <ion-label>Mañana</ion-label>
+    </ion-item-divider>
+    <ion-item *ngFor="let actividad of actividadesManana">
       <ion-label>{{ actividad.plan }}</ion-label>
       <ion-checkbox slot="end" [(ngModel)]="actividad.completo"></ion-checkbox>
     </ion-item>
   </ion-list>
+
+  <!-- Sección Tarde -->
+  <ion-list *ngIf="actividadesTarde.length > 0">
+    <ion-item-divider color="light">
+      <ion-label>Tarde</ion-label>
+    </ion-item-divider>
+    <ion-item *ngFor="let actividad of actividadesTarde">
+      <ion-label>{{ actividad.plan }}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="actividad.completo"></ion-checkbox>
+    </ion-item>
+  </ion-list>
+
+  <!-- Sección Noche -->
+  <ion-list *ngIf="actividadesNoche.length > 0">
+    <ion-item-divider color="light">
+      <ion-label>Noche</ion-label>
+    </ion-item-divider>
+    <ion-item *ngFor="let actividad of actividadesNoche">
+      <ion-label>{{ actividad.plan }}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="actividad.completo"></ion-checkbox>
+    </ion-item>
+  </ion-list>
+
+  <!-- Botón para cerrar el modal -->
   <div class="ion-text-center">
     <ion-button (click)="cerrarModal()">Cerrar</ion-button>
   </div>
- </ion-content>
+</ion-content>
