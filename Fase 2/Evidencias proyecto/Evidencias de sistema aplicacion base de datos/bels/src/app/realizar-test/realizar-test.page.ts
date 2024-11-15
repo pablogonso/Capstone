@@ -141,21 +141,14 @@ export class RealizarTestPage implements OnInit {
     const puntajePerfecto = this.preguntas.every(pregunta => pregunta.valor === 4);
     
     if (puntajePerfecto) {
-        console.log(`El test para el grupo ${this.grupoActivo} tiene puntuación perfecta. Avanzando al siguiente grupo sin generar plan de trabajo.`);
-        this.desbloquearSiguienteGrupo();
-        return;
-    }
-
-    // Usar el flag planCompletado para evitar múltiples verificaciones
-    if (this.planCompletado) {
-        console.log(`El plan de trabajo para el grupo ${this.grupoActivo} está completo. Desbloqueando el siguiente grupo.`);
+        console.log(`El test para el grupo ${this.grupoActivo} tiene puntuación perfecta. Avanzando al siguiente grupo.`);
         this.desbloquearSiguienteGrupo();
     } else {
-        console.log(`El plan de trabajo para el grupo ${this.grupoActivo} no está completo. Redirigiendo a Generar plan de trabajo.`);
+        console.log(`El test para el grupo ${this.grupoActivo} no tiene puntuación perfecta. Generando plan de trabajo.`);
         await this.enviarFormulario();
         this.router.navigate(['/plan-pruebas-langchain'], { queryParams: { grupo: this.grupoActivo } });
     }
-}
+  }
 
   calcularPuntajeTotal(preguntas: any[]): number {
     return preguntas.reduce((acc: number, pregunta: any) => acc + (parseInt(pregunta.valor, 10) || 0), 0);
