@@ -18,12 +18,12 @@
 
       <!-- Sub-lista de actividades -->
       <ion-list *ngIf="dia.expandido" class="sub-lista">
-        <ion-item-divider>Completadas</ion-item-divider>
+        <ion-item-divider class="completadas-title">Completadas</ion-item-divider>
         <ion-item *ngFor="let actividad of dia.completadas">
           {{ actividad }}
         </ion-item>
 
-        <ion-item-divider>No Completadas</ion-item-divider>
+        <ion-item-divider class="no-completadas-title">No Completadas</ion-item-divider>
         <ion-item *ngFor="let actividad of dia.noCompletadas">
           {{ actividad }}
         </ion-item>

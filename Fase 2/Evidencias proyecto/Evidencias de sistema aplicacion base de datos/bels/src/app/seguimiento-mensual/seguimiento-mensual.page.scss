@@ -1,12 +1,23 @@
 :host {
-    ion-item {
-      --background: #f9f9f9;
-    }
-  
-    .sub-lista {
-      margin-top: 10px; /* Opcional: Espacio adicional si lo deseas */
-      padding: 0 16px;
-      background-color: #f1f1f1;
-    }
+  ion-item {
+    --background: #f9f9f9;
   }
-  
+
+  .sub-lista {
+    margin-top: 10px; /* Espacio adicional */
+    padding: 0 16px;
+    background-color: #f1f1f1;
+  }
+
+  /* Estilo para el título "Completadas" */
+  .completadas-title {
+    color: green; /* Cambia el color a verde */
+    font-weight: bold;
+  }
+
+  /* Estilo para el título "No Completadas" */
+  .no-completadas-title {
+    color: red; /* Cambia el color a rojo */
+    font-weight: bold;
+  }
+}

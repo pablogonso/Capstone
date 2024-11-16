@@ -190,7 +190,49 @@ export class FirebaseService {
     }
   }
   
-
-
-
+  async obtenerActividadesDiarias(idUsuario: string): Promise<any[]> {
+    try {
+      const snapshot = await this.firestore
+        .collection('RegistroActividadesDiarias', ref =>
+          ref.where('idUsuario', '==', idUsuario) // Filtrar por idUsuario
+        )
+        .get()
+        .toPromise();
+  
+      if (snapshot && !snapshot.empty) {
+        const actividades: any[] = [];
+        snapshot.docs.forEach(doc => {
+          const docData = doc.data() as {
+            timestamp?: any; // Campo opcional para evitar errores
+            ActividadesRealizadas?: { Actividad: string; Completo: boolean }[];
+          };
+  
+          // Verificar si el timestamp existe
+          const timestamp = docData.timestamp ? docData.timestamp.toDate() : null;
+          if (!timestamp) {
+            console.warn(`El documento con ID ${doc.id} no tiene un campo timestamp.`);
+            return; // Saltar este documento si no tiene un timestamp
+          }
+  
+          const actividadesRealizadas = docData.ActividadesRealizadas || [];
+          actividadesRealizadas.forEach((actividad: { Actividad: string; Completo: boolean }) => {
+            actividades.push({
+              ...actividad,
+              Fecha: timestamp, // Usar el timestamp del nivel superior
+            });
+          });
+        });
+  
+        console.log(`Actividades obtenidas para el usuario ${idUsuario}:`, actividades);
+        return actividades;
+      } else {
+        console.warn(`No se encontraron actividades para el usuario con ID: ${idUsuario}`);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error al obtener actividades diarias:', error);
+      return [];
+    }
+  }
+  
 }
