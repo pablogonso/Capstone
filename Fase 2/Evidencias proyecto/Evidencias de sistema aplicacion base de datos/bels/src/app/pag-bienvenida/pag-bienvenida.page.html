@@ -14,8 +14,8 @@
     </swiper-slide>
   </swiper-container>
 
-  <!-- Mostrar ID de usuario en la interfaz -->
-  <p *ngIf="idUsuario">Bienvenido, tu ID de usuario es: {{ idUsuario }}</p>
+  <!-- Mostrar el nombre del usuario en la interfaz -->
+  <p *ngIf="nombreUsuario" style="text-align: center;">¡Bienvenido(a), {{ nombreUsuario }}!</p>
 
   <ion-card>
     <ion-card-content>
@@ -29,4 +29,3 @@
     </ion-card-content>
   </ion-card>
 </ion-content>
-

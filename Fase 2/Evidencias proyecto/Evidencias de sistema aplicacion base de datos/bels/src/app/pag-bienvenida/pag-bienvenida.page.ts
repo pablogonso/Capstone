@@ -11,10 +11,10 @@ register();
   selector: 'app-pag-bienvenida',
   templateUrl: './pag-bienvenida.page.html',
   styleUrls: ['./pag-bienvenida.page.scss'],
-})
-export class PagBienvenidaPage implements OnInit {
+})export class PagBienvenidaPage implements OnInit {
   idUsuario: string | null = null; // Variable para almacenar el ID de usuario
-  botonRealizarTestHabilitado: boolean = false; // Nueva variable para controlar el botón
+  nombreUsuario: string | null = null; // Nueva variable para almacenar el nombre del usuario
+  botonRealizarTestHabilitado: boolean = false; // Control del botón
 
   constructor(
     private afAuth: AngularFireAuth,
@@ -32,24 +32,28 @@ export class PagBienvenidaPage implements OnInit {
       loop: true,
     });
 
-    // Obtiene el ID del usuario y verifica el estado del último plan de trabajo
+    // Obtiene el ID del usuario
     this.idUsuario = await this.firebaseService.obtenerIdUsuarioDocumento();
     console.log('ID de usuario detectado:', this.idUsuario);
 
-    // Verificar el estado del último plan de trabajo si el usuario está logueado
+    // Obtiene el nombre del usuario
+    if (this.idUsuario) {
+      this.nombreUsuario = await this.firebaseService.obtenerNombreUsuario();
+      console.log('Nombre del usuario:', this.nombreUsuario);
+    }
+
+    // Verificar el estado del último plan de trabajo
     if (this.idUsuario) {
       const ultimoPlan = await this.firebaseService.obtenerUltimoPlanTrabajo(this.idUsuario);
-      console.log("Último plan de trabajo obtenido:", ultimoPlan); // Log para verificar el plan más reciente
+      console.log('Último plan de trabajo obtenido:', ultimoPlan);
 
-      // Verificar si planCompletado es true o false y ajustar el botón
+      // Ajustar el botón basado en el estado del último plan de trabajo
       if (ultimoPlan) {
         this.botonRealizarTestHabilitado = ultimoPlan.planCompletado === true;
-        console.log("Valor de planCompletado:", ultimoPlan.planCompletado);
-        console.log("Estado de botonRealizarTestHabilitado:", this.botonRealizarTestHabilitado);
+        console.log('Estado de botonRealizarTestHabilitado:', this.botonRealizarTestHabilitado);
       } else {
-        // Si no hay un plan previo, habilita el botón para el primer test
         this.botonRealizarTestHabilitado = true;
-        console.log("No se encontró un plan anterior, habilitando el botón para el primer test.");
+        console.log('No se encontró un plan anterior, habilitando el botón para el primer test.');
       }
     }
   }

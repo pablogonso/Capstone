@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ planesTrabajos[0]?.titulo }}</ion-title>
+    <ion-title>{{ planesTrabajos[0].titulo }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -19,10 +19,10 @@
      ></circle-progress>
 
     <ion-card-header>
-      <ion-card-title>{{ planesTrabajos[0]?.titulo }}</ion-card-title>
+      <ion-card-title>{{ planesTrabajos[0].titulo }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p>{{ planesTrabajos[0]?.descripcion }}</p>
+      <p>{{ planesTrabajos[0].descripcion }}</p>
       <!-- Botón para abrir el modal -->
       <ion-button expand="block" (click)="abrirModal()">Ver Actividades</ion-button>
     </ion-card-content>

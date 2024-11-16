@@ -161,8 +161,35 @@ export class FirebaseService {
   }
 
   
-
-
+  async obtenerNombreUsuario(): Promise<string | null> {
+    try {
+      const user = await this.afAuth.currentUser; // Obtiene el usuario autenticado
+      if (!user || !user.email) {
+        console.error("Usuario no autenticado o sin correo");
+        return null;
+      }
+  
+      // Consulta en Firestore el documento del usuario autenticado
+      const snapshot = await this.firestore.collection('UsuariosRegistrados', ref =>
+        ref.where('correo', '==', user.email)
+      ).get().toPromise();
+  
+      if (!snapshot || snapshot.empty) { // Validación explícita
+        console.warn("No se encontró un documento para el usuario");
+        return null;
+      }
+  
+      // Obtén el nombre del usuario
+      const usuarioDoc = snapshot.docs[0];
+      const usuarioData = usuarioDoc.data() as { nombre: string };
+  
+      return usuarioData.nombre;
+    } catch (error) {
+      console.error("Error al obtener el nombre del usuario:", error);
+      return null;
+    }
+  }
+  
 
 
 
