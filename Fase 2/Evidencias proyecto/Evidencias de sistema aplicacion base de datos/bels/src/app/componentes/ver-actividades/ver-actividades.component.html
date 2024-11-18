@@ -12,7 +12,10 @@
     </ion-item-divider>
     <ion-item *ngFor="let actividad of actividadesManana">
       <ion-label>{{ actividad.plan }}</ion-label>
-      <ion-checkbox slot="end" [(ngModel)]="actividad.completo"></ion-checkbox>
+      <ion-checkbox
+        slot="end"
+        [(ngModel)]="actividad.completo"
+      ></ion-checkbox>
     </ion-item>
   </ion-list>
 
@@ -23,7 +26,10 @@
     </ion-item-divider>
     <ion-item *ngFor="let actividad of actividadesTarde">
       <ion-label>{{ actividad.plan }}</ion-label>
-      <ion-checkbox slot="end" [(ngModel)]="actividad.completo"></ion-checkbox>
+      <ion-checkbox
+        slot="end"
+        [(ngModel)]="actividad.completo"
+      ></ion-checkbox>
     </ion-item>
   </ion-list>
 
@@ -34,9 +40,17 @@
     </ion-item-divider>
     <ion-item *ngFor="let actividad of actividadesNoche">
       <ion-label>{{ actividad.plan }}</ion-label>
-      <ion-checkbox slot="end" [(ngModel)]="actividad.completo"></ion-checkbox>
+      <ion-checkbox
+        slot="end"
+        [(ngModel)]="actividad.completo"
+      ></ion-checkbox>
     </ion-item>
   </ion-list>
+
+  <!-- Botón para guardar cambios -->
+  <div class="ion-text-center">
+    <ion-button color="primary" (click)="guardarCambios()">Guardar Cambios</ion-button>
+  </div>
 
   <!-- Botón para cerrar el modal -->
   <div class="ion-text-center">

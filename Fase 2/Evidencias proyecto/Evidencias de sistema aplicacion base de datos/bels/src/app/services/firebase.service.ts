@@ -234,5 +234,78 @@ export class FirebaseService {
       return [];
     }
   }
+
+  async obtenerUltimoRegistroActividades(idUsuario: string): Promise<any | null> {
+    try {
+      const snapshot = await this.firestore
+        .collection('RegistroActividadesDiarias', (ref) =>
+          ref.where('idUsuario', '==', idUsuario)
+            .orderBy('timestamp', 'desc')
+            .limit(1)
+        )
+        .get()
+        .toPromise();
+  
+      if (snapshot && !snapshot.empty) {
+        return snapshot.docs[0].data();
+      } else {
+        console.warn('No se encontraron registros para el usuario.');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error al obtener el último registro de actividades:', error);
+      return null;
+    }
+  }
+  
+
+  async guardarRegistroActividades(registro: any): Promise<void> {
+    try {
+      await this.firestore.collection('RegistroActividadesDiarias').add(registro);
+      console.log('Registro guardado correctamente en RegistroActividadesDiarias.');
+    } catch (error) {
+      console.error('Error al guardar el registro en RegistroActividadesDiarias:', error);
+      throw error;
+    }
+  }
+
+
+async actualizarActividades(idUsuario: string, actividades: any[]) {
+  try {
+    const registroRef = this.firestore
+      .collection('RegistroActividadesDiarias', (ref) =>
+        ref.where('idUsuario', '==', idUsuario)
+      )
+      .get();
+
+    const snapshot = await registroRef.toPromise();
+
+    // Validar si snapshot existe y tiene documentos
+    if (snapshot && !snapshot.empty) {
+      const registroId = snapshot.docs[0].id; // Obtiene el ID del registro
+
+      // Mapeamos las actividades para que mantengan la variable `Completo`
+      const actividadesActualizadas = actividades.map((actividad) => ({
+        ...actividad,
+        Completo: actividad.completo, // Aseguramos que se actualiza `Completo`
+      }));
+
+      await this.firestore
+        .collection('RegistroActividadesDiarias')
+        .doc(registroId)
+        .update({ ActividadesRealizadas: actividadesActualizadas });
+
+      console.log('Actividades actualizadas en Firebase.');
+    } else {
+      console.warn('No se encontró ningún registro para este usuario.');
+    }
+  } catch (error) {
+    console.error('Error al actualizar actividades:', error);
+  }
+}
+
+
+
+  
   
 }

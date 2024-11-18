@@ -5,10 +5,10 @@
 </ion-header>
 
 <ion-content>
-  <ion-button expand="full" (click)="generarRespuestas()" [disabled]="buttonDisabled">
-    <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
-    <span *ngIf="!cargando">Generar plan de trabajo</span>
-  </ion-button>
+<ion-button expand="full" (click)="ejecutarFunciones()" [disabled]="buttonDisabled">
+  <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
+  <span *ngIf="!cargando">Generar plan de trabajo</span>
+</ion-button>
   
 
   <div *ngIf="recomendaciones && recomendaciones.preguntasPlanes">

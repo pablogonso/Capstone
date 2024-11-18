@@ -15,34 +15,35 @@ export class PlanDeTrabajoPage implements OnInit {
   constructor(
     private modalController: ModalController,
     private firebaseService: FirebaseService
-  ) { }
+  ) {}
 
   async ngOnInit() {
     try {
       const usuarioId = await this.firebaseService.obtenerIdUsuarioDocumento();
-
+  
       if (usuarioId) {
-        const ultimoPlan = await this.firebaseService.obtenerUltimoPlanTrabajo(usuarioId);
-
-        if (ultimoPlan) {
-          // Accede a las propiedades usando corchetes e incluye horaRecomendacion
+        const ultimoRegistro = await this.firebaseService.obtenerUltimoRegistroActividades(usuarioId);
+  
+        if (ultimoRegistro && ultimoRegistro.ActividadesRealizadas) {
+          // Construimos el plan de trabajo basado en la colección
           this.planesTrabajos = [
             {
-              idGrupo: ultimoPlan['idGrupo'],
-              titulo: ultimoPlan['Grupo'],
-              descripcion: "Incluye hábitos como una buena alimentación, ejercicio, descanso y gestión del estrés.", // Personaliza si es necesario
-              preguntasPlanes: ultimoPlan['preguntasPlanes'].map((p: { plan: string, horaRecomendacion: string }) => ({
-                plan: p['plan'],
-                horaRecomendacion: p['horaRecomendacion'], // Incluimos horaRecomendacion aquí
-                completo: false, // Inicializamos "completo" como false
-              })),
+              idGrupo: 'ActividadesDiarias', // Identificador del grupo
+              titulo: ultimoRegistro.Grupo || 'Sin Grupo', // Usamos el campo `Grupo` de la base de datos
+              descripcion: 'Actividades registradas recientemente.', // Descripción personalizada
+              preguntasPlanes: ultimoRegistro.ActividadesRealizadas.map(
+                (actividad: { Actividad: string; Completo: boolean }) => ({
+                  plan: actividad.Actividad,
+                  completo: actividad.Completo,
+                })
+              ),
+              idUsuario: usuarioId, // Incluimos el ID del usuario aquí
             },
           ];
-          
-          // Verificar si `horaRecomendacion` fue traído correctamente
-          console.log("Planes de trabajo con horaRecomendacion:", this.planesTrabajos);
+  
+          console.log('Último registro cargado desde RegistroActividadesDiarias:', this.planesTrabajos);
         } else {
-          console.warn('No se pudo obtener el último plan de trabajo.');
+          console.warn('No se encontraron actividades para el usuario.');
         }
       } else {
         console.warn('Usuario no autenticado.');
@@ -51,30 +52,52 @@ export class PlanDeTrabajoPage implements OnInit {
       console.error('Error al inicializar el componente:', error);
     }
   }
-
+  
   async abrirModal() {
     if (this.planesTrabajos.length > 0) {
       const modal = await this.modalController.create({
         component: VerActividadesComponent,
         componentProps: {
-          planesTrabajo: this.planesTrabajos[0], // Pasar el plan de trabajo al modal
+          planesTrabajo: this.planesTrabajos[0], // Incluye el plan de trabajo completo
         },
       });
-
+  
+      // Espera hasta que el modal sea cerrado
       await modal.present();
+  
+      // Escucha el evento de cierre del modal
+      const { data } = await modal.onDidDismiss();
+  
+      if (data && data.actualizado) {
+        console.log('Cerrando modal y recargando la página...');
+        window.location.reload(); // Recarga la página
+      }
     } else {
       console.warn('No hay planes de trabajo disponibles para mostrar.');
     }
   }
+  
 
   obtenerPorcentaje(planesTrabajo: planesTrabajo): number {
+    if (!planesTrabajo || !planesTrabajo.preguntasPlanes) {
+      console.warn('El plan de trabajo no contiene actividades válidas.');
+      return 0;
+    }
+  
+    const totalActividades = planesTrabajo.preguntasPlanes.length;
+  
+    if (totalActividades === 0) {
+      return 0; // Evitamos división por cero
+    }
+  
+    // Contar actividades completadas (donde `Completo` está en true)
     const actividadesCompletadas = planesTrabajo.preguntasPlanes.filter(
       (pregunta) => pregunta.completo
     ).length;
-    const totalActividades = planesTrabajo.preguntasPlanes.length;
-    return Math.floor((actividadesCompletadas / totalActividades) * 100); // Calculamos el porcentaje completado
-  }
-
+  
+    // Calculamos el porcentaje
+    return Math.floor((actividadesCompletadas / totalActividades) * 100);
+  }  
   async presentModal(opts: ModalOptions) {
     const modal = await this.modalController.create(opts);
     await modal.present();

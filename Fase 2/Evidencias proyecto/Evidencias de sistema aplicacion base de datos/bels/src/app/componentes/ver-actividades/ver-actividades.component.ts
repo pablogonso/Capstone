@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { FirebaseService } from '../../services/firebase.service';
 
 @Component({
   selector: 'app-ver-actividades',
@@ -8,52 +9,75 @@ import { ModalController } from '@ionic/angular';
 })
 export class VerActividadesComponent implements OnInit {
   @Input() planesTrabajo: any; // Recibimos el plan de trabajo
-
   actividadesManana: any[] = [];
   actividadesTarde: any[] = [];
   actividadesNoche: any[] = [];
 
-  constructor(private modalController: ModalController) { }
+  constructor(
+    private modalController: ModalController,
+    private firebaseService: FirebaseService
+  ) {}
 
-  ngOnInit() {
-    // Verifica que `planesTrabajo` y `preguntasPlanes` están definidos
-    if (this.planesTrabajo && this.planesTrabajo.preguntasPlanes) {
-      this.clasificarActividades(); // Llama a la función de clasificación
-    } else {
-      console.warn("planesTrabajo o preguntasPlanes no están definidos correctamente.");
+  async ngOnInit() {
+    // Carga inicial similar al código actual
+    if (!this.planesTrabajo || !this.planesTrabajo.idUsuario) {
+      console.warn('El plan de trabajo no tiene un ID de usuario válido.');
+      return;
+    }
+
+    const ultimoRegistro = await this.firebaseService.obtenerUltimoRegistroActividades(
+      this.planesTrabajo.idUsuario
+    );
+
+    if (ultimoRegistro && ultimoRegistro.ActividadesRealizadas) {
+      this.clasificarActividades(ultimoRegistro.ActividadesRealizadas);
     }
   }
 
-  clasificarActividades() {
-    this.planesTrabajo.preguntasPlanes.forEach((actividad: any) => {
-      // Verifica que `horaRecomendacion` exista y esté en el formato esperado
+  clasificarActividades(actividades: any[]) {
+    actividades.forEach((actividad: any) => {
+      actividad.plan = actividad.Actividad; // Mapear campos
+      actividad.completo = actividad.Completo;
+
       if (typeof actividad.horaRecomendacion === 'string') {
         const hora = parseInt(actividad.horaRecomendacion.split(':')[0], 10);
 
-        // Clasificación según la hora
-        if (!isNaN(hora)) {
-          if (hora >= 5 && hora < 12) {
-            this.actividadesManana.push(actividad);
-          } else if (hora >= 12 && hora < 18) {
-            this.actividadesTarde.push(actividad);
-          } else {
-            this.actividadesNoche.push(actividad);
-          }
+        if (hora >= 5 && hora < 12) {
+          this.actividadesManana.push(actividad);
+        } else if (hora >= 12 && hora < 18) {
+          this.actividadesTarde.push(actividad);
         } else {
-          console.warn("Hora no válida en actividad:", actividad);
+          this.actividadesNoche.push(actividad);
         }
-      } else {
-        console.warn("horaRecomendacion no está presente o no es una cadena en actividad:", actividad);
       }
     });
-
-    // Imprime los resultados para verificar la clasificación
-    console.log("Actividades Mañana:", this.actividadesManana);
-    console.log("Actividades Tarde:", this.actividadesTarde);
-    console.log("Actividades Noche:", this.actividadesNoche);
   }
 
-  cerrarModal() {
-    this.modalController.dismiss(); // Cierra el modal
+  async guardarCambios() {
+    try {
+      const todasLasActividades = [
+        ...this.actividadesManana,
+        ...this.actividadesTarde,
+        ...this.actividadesNoche,
+      ];
+  
+      // Actualiza el estado de las actividades en Firebase
+      await this.firebaseService.actualizarActividades(
+        this.planesTrabajo.idUsuario,
+        todasLasActividades
+      );
+  
+      console.log('Cambios guardados correctamente.');
+  
+      // Cierra el modal y notifica al componente principal
+      this.cerrarModal(true); // Indica que los datos se actualizaron
+    } catch (error) {
+      console.error('Error al guardar los cambios:', error);
+    }
+  }
+  
+
+  cerrarModal(actualizado: boolean = false) {
+    this.modalController.dismiss({ actualizado });
   }
 }

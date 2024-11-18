@@ -1,11 +1,11 @@
 export interface planesTrabajo {
-
-
     titulo: string
     // nombre: string,
     descripcion: string,
     idGrupo: string,
+    idUsuario: string,
     // idPlan: string,
+
     preguntasPlanes: preguntasPlanes[];
 
 

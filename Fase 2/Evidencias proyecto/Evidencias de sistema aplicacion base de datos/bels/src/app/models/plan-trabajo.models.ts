@@ -4,3 +4,4 @@ export interface PlanTrabajo {
     [key: string]: any;
   }
   
+  

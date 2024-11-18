@@ -12,14 +12,14 @@ load_dotenv()
 
 # Configuración del modelo de IA con OpenAI
 api_key = os.getenv('OPENAI_API_KEY')
-model_id = "ft:gpt-4o-2024-08-06:personal:myexperimentsimplified:AGatb20a"
+model_id = "gpt-4o"
 llm = ChatOpenAI(openai_api_key=api_key, model_name=model_id, max_tokens=150)
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, methods=["GET", "POST", "OPTIONS"])
 
 # Configurar Firebase
-cred = credentials.Certificate(r"/home/jose/Capstone/Fase 2/Evidencias proyecto/Evidencias de sistema aplicacion base de datos/bels/src/proyecto-bels-firebase-adminsdk-pfhrt-aaddb5520b.json")
+cred = credentials.Certificate(r"C:\Capstone\Capstone3\Capstone\Fase 2\Evidencias proyecto\Evidencias de sistema aplicacion base de datos\bels\src\proyecto-bels-firebase-adminsdk-pfhrt-ec4a1563e2.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 

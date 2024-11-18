@@ -170,4 +170,57 @@ export class PlanPruebasLangchainPage implements OnInit {
     const match = recomendacion.match(horaRegex);
     return match ? match[0] : null;
   }
+
+  async poblarRegistroActividades() {
+    try {
+      // Verifica si ya se han generado las recomendaciones
+      if (!this.recomendaciones || !this.recomendaciones.preguntasPlanes) {
+        console.error('No se han generado recomendaciones para poblar RegistroActividadesDiarias.');
+        return;
+      }
+  
+      // Obtén el ID del usuario logeado
+      const idUsuario = await this.firebaseService.obtenerIdUsuarioDocumento();
+      if (!idUsuario) {
+        console.error('No se pudo obtener el ID del usuario logeado.');
+        return;
+      }
+  
+      // Crea las actividades realizadas, incluyendo "horaRecomendacion"
+      const actividadesRealizadas = this.recomendaciones.preguntasPlanes.map((pregunta: any) => ({
+        Actividad: pregunta.plan,
+        Completo: false, // Estado inicial
+        NumDia: 1, // Día predeterminado
+        Fecha: new Date(), // Fecha actual
+        horaRecomendacion: pregunta.horaRecomendacion || null, // Incluye horaRecomendacion si está disponible
+      }));
+  
+      // Construye el documento para Firebase, incluyendo "Grupo"
+      const registro = {
+        idPlan: this.recomendaciones.idPlan,
+        idUsuario,
+        Grupo: this.grupoActivo, // Incluye el grupo activo en el registro
+        ActividadesRealizadas: actividadesRealizadas,
+        timestamp: new Date(), // Fecha del registro
+      };
+  
+      // Guarda el registro en la colecciónx
+      await this.firebaseService.guardarRegistroActividades(registro);
+      console.log('Registro de actividades diarias guardado:', registro);
+    } catch (error) {
+      console.error('Error al poblar RegistroActividadesDiarias:', error);
+    }
+  }
+  
+  async ejecutarFunciones() {
+    try {
+      await this.generarRespuestas(); // Espera a que se generen las respuestas
+      this.poblarRegistroActividades(); // Llama a poblar RegistroActividadesDiarias
+    } catch (error) {
+      console.error('Error al ejecutar funciones:', error);
+    }
+  }
+
+
+
 }
