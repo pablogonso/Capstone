@@ -29,15 +29,16 @@ export class VerActividadesComponent implements OnInit {
       this.planesTrabajo.idUsuario
     );
 
-    if (ultimoRegistro && ultimoRegistro.ActividadesRealizadas) {
-      this.clasificarActividades(ultimoRegistro.ActividadesRealizadas);
+    if (ultimoRegistro && ultimoRegistro.data.ActividadesRealizadas) {
+      this.clasificarActividades(ultimoRegistro.data.ActividadesRealizadas);
     }
+    
   }
 
   clasificarActividades(actividades: any[]) {
     actividades.forEach((actividad: any) => {
       actividad.plan = actividad.Actividad; // Mapear campos
-      actividad.completo = actividad.Completo;
+      actividad.Completo = actividad.Completo;
 
       if (typeof actividad.horaRecomendacion === 'string') {
         const hora = parseInt(actividad.horaRecomendacion.split(':')[0], 10);
@@ -61,21 +62,31 @@ export class VerActividadesComponent implements OnInit {
         ...this.actividadesNoche,
       ];
   
-      // Actualiza el estado de las actividades en Firebase
+      // Validar que todas las actividades tienen la estructura necesaria
+      const actividadesValidas = todasLasActividades.filter((actividad) =>
+        actividad.Actividad && typeof actividad.Completo === 'boolean'
+      );
+  
+      if (actividadesValidas.length === 0) {
+        console.warn('No hay actividades válidas para guardar.');
+        return;
+      }
+  
+      // Actualiza las actividades en Firebase
       await this.firebaseService.actualizarActividades(
         this.planesTrabajo.idUsuario,
-        todasLasActividades
+        actividadesValidas
       );
   
       console.log('Cambios guardados correctamente.');
   
       // Cierra el modal y notifica al componente principal
-      this.cerrarModal(true); // Indica que los datos se actualizaron
+      this.cerrarModal(true);
     } catch (error) {
       console.error('Error al guardar los cambios:', error);
+      // Mostrar mensaje visible al usuario en la UI (puedes agregar un servicio de notificaciones)
     }
   }
-  
 
   cerrarModal(actualizado: boolean = false) {
     this.modalController.dismiss({ actualizado });

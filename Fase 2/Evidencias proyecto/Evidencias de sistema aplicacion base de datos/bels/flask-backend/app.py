@@ -19,7 +19,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, methods=["GET", "POST", "OPTIONS"])
 
 # Configurar Firebase
-cred = credentials.Certificate(r"C:\Capstone\Capstone3\Capstone\Fase 2\Evidencias proyecto\Evidencias de sistema aplicacion base de datos\bels\src\proyecto-bels-firebase-adminsdk-pfhrt-ec4a1563e2.json")
+cred = credentials.Certificate(r"/home/jose/Capstone/Fase 2/Evidencias proyecto/Evidencias de sistema aplicacion base de datos/bels/src/proyecto-bels-firebase-adminsdk-pfhrt-ec4a1563e2.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 

@@ -22,7 +22,7 @@ export class UtilidadesService {
 
   obtenerPorcentaje(categoria : categoria)
   {
-    let actividadCompletado = categoria.actividad.filter(actividad => actividad.completo).length;
+    let actividadCompletado = categoria.actividad.filter(actividad => actividad.Completo).length;
     let totalActividad = categoria.actividad.length;
     let porcentaje = (100/ totalActividad) * actividadCompletado
 

@@ -14,7 +14,7 @@ export interface planesTrabajo {
 export interface preguntasPlanes {
 
     plan: string,
-    completo: boolean,
+    Completo: boolean,
     //  pregunta :  string,
     //   puntaje : number,
 

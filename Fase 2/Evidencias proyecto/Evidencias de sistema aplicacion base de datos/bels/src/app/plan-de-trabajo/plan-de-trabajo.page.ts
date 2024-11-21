@@ -24,17 +24,17 @@ export class PlanDeTrabajoPage implements OnInit {
       if (usuarioId) {
         const ultimoRegistro = await this.firebaseService.obtenerUltimoRegistroActividades(usuarioId);
   
-        if (ultimoRegistro && ultimoRegistro.ActividadesRealizadas) {
+        if (ultimoRegistro && ultimoRegistro.data.ActividadesRealizadas) {
           // Construimos el plan de trabajo basado en la colección
           this.planesTrabajos = [
             {
               idGrupo: 'ActividadesDiarias', // Identificador del grupo
-              titulo: ultimoRegistro.Grupo || 'Sin Grupo', // Usamos el campo `Grupo` de la base de datos
+              titulo: ultimoRegistro.data.Grupo || 'Sin Grupo', // Usamos el campo `Grupo` de la base de datos
               descripcion: 'Actividades registradas recientemente.', // Descripción personalizada
-              preguntasPlanes: ultimoRegistro.ActividadesRealizadas.map(
+              preguntasPlanes: ultimoRegistro.data.ActividadesRealizadas.map(
                 (actividad: { Actividad: string; Completo: boolean }) => ({
                   plan: actividad.Actividad,
-                  completo: actividad.Completo,
+                  Completo: actividad.Completo,
                 })
               ),
               idUsuario: usuarioId, // Incluimos el ID del usuario aquí
@@ -69,9 +69,10 @@ export class PlanDeTrabajoPage implements OnInit {
       const { data } = await modal.onDidDismiss();
   
       if (data && data.actualizado) {
-        console.log('Cerrando modal y recargando la página...');
-        window.location.reload(); // Recarga la página
+        console.log('Cerrando modal y actualizando actividades...');
+        await this.ngOnInit(); // Reejecuta la lógica de inicialización para refrescar los datos
       }
+      
     } else {
       console.warn('No hay planes de trabajo disponibles para mostrar.');
     }
@@ -92,7 +93,7 @@ export class PlanDeTrabajoPage implements OnInit {
   
     // Contar actividades completadas (donde `Completo` está en true)
     const actividadesCompletadas = planesTrabajo.preguntasPlanes.filter(
-      (pregunta) => pregunta.completo
+      (pregunta) => pregunta.Completo
     ).length;
   
     // Calculamos el porcentaje

@@ -235,28 +235,36 @@ export class FirebaseService {
     }
   }
 
-  async obtenerUltimoRegistroActividades(idUsuario: string): Promise<any | null> {
+  async obtenerUltimoRegistroActividades(idUsuario: string): Promise<{ id: string; data: any } | null> {
     try {
+      // Realiza la consulta a Firebase
       const snapshot = await this.firestore
         .collection('RegistroActividadesDiarias', (ref) =>
-          ref.where('idUsuario', '==', idUsuario)
-            .orderBy('timestamp', 'desc')
-            .limit(1)
+          ref.where('idUsuario', '==', idUsuario) // Filtra por el ID del usuario
+            .orderBy('timestamp', 'desc')       // Ordena por timestamp descendente
+            .limit(1)                           // Limita a un solo documento
         )
         .get()
         .toPromise();
   
+      // Validar si el snapshot contiene datos
       if (snapshot && !snapshot.empty) {
-        return snapshot.docs[0].data();
+        const ultimoDoc = snapshot.docs[0]; // Obtiene el primer documento
+        const data = ultimoDoc.data(); // Datos del documento
+  
+        // Agregar el ID del documento al objeto de retorno
+        console.log('Último registro de actividades obtenido:', { id: ultimoDoc.id, data });
+        return { id: ultimoDoc.id, data }; // Retornar el ID y los datos del documento
       } else {
-        console.warn('No se encontraron registros para el usuario.');
-        return null;
+        console.warn('No se encontraron registros para el usuario:', idUsuario);
+        return null; // Retornar null si no hay datos
       }
     } catch (error) {
       console.error('Error al obtener el último registro de actividades:', error);
-      return null;
+      return null; // Retornar null en caso de error
     }
   }
+  
   
 
   async guardarRegistroActividades(registro: any): Promise<void> {
@@ -266,46 +274,57 @@ export class FirebaseService {
     } catch (error) {
       console.error('Error al guardar el registro en RegistroActividadesDiarias:', error);
       throw error;
-    }
-  }
-
-
-async actualizarActividades(idUsuario: string, actividades: any[]) {
-  try {
-    const registroRef = this.firestore
-      .collection('RegistroActividadesDiarias', (ref) =>
-        ref.where('idUsuario', '==', idUsuario)
-      )
-      .get();
-
-    const snapshot = await registroRef.toPromise();
-
-    // Validar si snapshot existe y tiene documentos
-    if (snapshot && !snapshot.empty) {
-      const registroId = snapshot.docs[0].id; // Obtiene el ID del registro
-
-      // Mapeamos las actividades para que mantengan la variable `Completo`
-      const actividadesActualizadas = actividades.map((actividad) => ({
-        ...actividad,
-        Completo: actividad.completo, // Aseguramos que se actualiza `Completo`
-      }));
-
-      await this.firestore
-        .collection('RegistroActividadesDiarias')
-        .doc(registroId)
-        .update({ ActividadesRealizadas: actividadesActualizadas });
-
-      console.log('Actividades actualizadas en Firebase.');
-    } else {
-      console.warn('No se encontró ningún registro para este usuario.');
     }
-  } catch (error) {
-    console.error('Error al actualizar actividades:', error);
   }
-}
 
-
-
+  async actualizarActividades(idUsuario: string, actividades: any[]): Promise<void> {
+    try {
+      // Filtra por idUsuario y ordena por timestamp descendente, limitando a 1
+      const snapshot = await this.firestore
+        .collection('RegistroActividadesDiarias', (ref) =>
+          ref.where('idUsuario', '==', idUsuario)
+            .orderBy('timestamp', 'desc') // Orden descendente
+            .limit(1)                    // Solo un documento
+        )
+        .get()
+        .toPromise();
+  
+      // Verifica si el documento existe
+      if (snapshot && !snapshot.empty) {
+        const registroDoc = snapshot.docs[0]; // Obtiene el documento más reciente
+        const registroId = registroDoc.id; // ID del documento
+  
+        // Define un tipo explícito para registroData
+        const registroData = registroDoc.data() as { ActividadesRealizadas: any[] }; // Añade el tipo esperado
+  
+        // Verifica si el campo `ActividadesRealizadas` existe y es un array
+        if (!registroData || !Array.isArray(registroData.ActividadesRealizadas)) {
+          console.warn(`El documento con ID ${registroId} no tiene actividades registradas o el campo es inválido.`);
+          return; // Salir si no hay actividades para actualizar
+        }
+  
+        // Estructura las actividades actualizadas
+        const actividadesActualizadas = actividades.map((actividad) => ({
+          ...actividad,
+          Completo: actividad.Completo ?? false, // Asegúrate de mantener la propiedad Completo
+        }));
+  
+        // Actualiza el documento en Firebase
+        await this.firestore
+          .collection('RegistroActividadesDiarias')
+          .doc(registroId)
+          .update({ ActividadesRealizadas: actividadesActualizadas });
+  
+        console.log('Actividades actualizadas correctamente en Firebase para el registro:', registroId);
+      } else {
+        console.warn('No se encontró un registro de actividades para el usuario:', idUsuario);
+      }
+    } catch (error) {
+      console.error('Error al actualizar las actividades:', error);
+    }
+  }
   
   
+
+
 }
