@@ -24,13 +24,15 @@
     <ion-card-header>
       <ion-card-title>{{ planesTrabajos[0]?.titulo || 'Plan no definido' }}</ion-card-title>
     </ion-card-header>
+    </ion-card>
+
     <ion-card-content>
       <p>{{ planesTrabajos[0]?.descripcion || 'Descripción no disponible.' }}</p>
       <!-- Botón para abrir el modal -->
       <ion-button expand="block" (click)="abrirModal()">Ver Actividades</ion-button>
-    </ion-card-content>
-  </ion-card>
-
+      <ion-button expand="block" color="primary" (click)="irAlHome()">Volver al inicio</ion-button>
+    </ion-card-content> 
+  
   <!-- Mensaje para cuando no hay datos -->
   <div *ngIf="planesTrabajos.length === 0" class="ion-text-center">
     <p>No hay datos disponibles para mostrar.</p>

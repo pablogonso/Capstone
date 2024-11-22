@@ -9,6 +9,10 @@
   <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
   <span *ngIf="!cargando">Generar plan de trabajo</span>
 </ion-button>
+
+<ion-button expand="block" color="primary" (click)="irAlHome()">
+  Volver al inicio
+</ion-button>
   
 
   <div *ngIf="recomendaciones && recomendaciones.preguntasPlanes">

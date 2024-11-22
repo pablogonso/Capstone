@@ -3,15 +3,15 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { PlanTrabajo } from 'src/app/models/plan-trabajo.models';
 import { planesTrabajo } from '../Modelo/tareas.model';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FirebaseService {
   constructor(private firestore: AngularFirestore, private afAuth: AngularFireAuth) {}
+
+  // Configuración del día de corte
+  private DIA_CORTE = 'Viernes'; // Día configurable
 
   // Método para obtener el ID de usuario logueado en Firebase
   async obtenerIdUsuarioDocumento(): Promise<string | null> {
@@ -21,7 +21,7 @@ export class FirebaseService {
       return null;
     }
 
-    const snapshot = await this.firestore.collection('UsuariosRegistrados', ref =>
+    const snapshot = await this.firestore.collection('UsuariosRegistrados', (ref) =>
       ref.where('correo', '==', user.email)
     ).get().toPromise();
 
@@ -67,6 +67,116 @@ export class FirebaseService {
       return null;
     }
   }
+
+  // Método público para obtener el día de corte
+obtenerDiaDeCorte(): string {
+  return this.DIA_CORTE; // Retorna el valor de DIA_CORTE
+}
+
+
+  // Método para obtener documentos de RegistroActividadesDiarias en un rango de fechas
+  async obtenerDocumentosDeRango(idUsuario: string): Promise<any[]> {
+    try {
+      // Calcula las fechas de lunes a día de corte
+      const hoy = new Date();
+      const diaSemana = hoy.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+      const diasCorte = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const indiceCorte = diasCorte.indexOf(this.DIA_CORTE);
+
+      if (indiceCorte === -1) {
+        console.error('Día de corte inválido:', this.DIA_CORTE);
+        return [];
+      }
+
+      // Calcula el rango de fechas (lunes a día de corte)
+      const lunes = new Date(hoy);
+      lunes.setDate(hoy.getDate() - diaSemana + 1); // Mueve al lunes de esta semana
+      const diaCorte = new Date(lunes);
+      diaCorte.setDate(lunes.getDate() + (indiceCorte - 1)); // Avanza hasta el día de corte
+
+      console.log(`Buscando documentos desde ${lunes} hasta ${diaCorte}`);
+
+      // Consulta documentos en el rango de fechas
+      const snapshot = await this.firestore
+        .collection('RegistroActividadesDiarias', (ref) =>
+          ref
+            .where('idUsuario', '==', idUsuario)
+            .where('timestamp', '>=', lunes)
+            .where('timestamp', '<=', diaCorte)
+            .orderBy('timestamp', 'asc')
+        )
+        .get()
+        .toPromise();
+
+      if (snapshot && !snapshot.empty) {
+        const documentos = snapshot.docs.map((doc) => doc.data());
+        console.log(`Se encontraron ${documentos.length} documentos en el rango.`);
+        return documentos;
+      } else {
+        console.warn('No se encontraron documentos en el rango especificado.');
+        return [];
+      }
+    } catch (error) {
+      console.error('Error al obtener documentos de rango:', error);
+      return [];
+    }
+  }
+
+  // Método para actualizar el campo PlanCompletado en el documento más reciente de PlanesTrabajo
+  async actualizarPlanCompletado(idUsuario: string): Promise<boolean> {
+    try {
+      // Obtiene el último plan de trabajo
+      const snapshot = await this.firestore
+        .collection('PlanesTrabajo', (ref) =>
+          ref
+            .where('idUsuario', '==', idUsuario)
+            .orderBy('timestamp', 'desc')
+            .limit(1)
+        )
+        .get()
+        .toPromise();
+
+      if (snapshot && !snapshot.empty) {
+        const planDoc = snapshot.docs[0];
+        const planId = planDoc.id;
+
+        // Actualiza el campo PlanCompletado
+        await this.firestore
+          .collection('PlanesTrabajo')
+          .doc(planId)
+          .update({ planCompletado: true });
+
+        console.log(`Plan de trabajo actualizado como completado para el usuario ${idUsuario}.`);
+        return true;
+      } else {
+        console.warn('No se encontró un plan de trabajo para el usuario:', idUsuario);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error al actualizar el plan de trabajo:', error);
+      return false;
+    }
+  }
+
+  // Método para verificar si todas las actividades están completadas
+  async verificarActividadesCompletadas(idUsuario: string): Promise<boolean> {
+    try {
+      const documentos = await this.obtenerDocumentosDeRango(idUsuario);
+
+      // Revisa que todos los documentos tengan actividades completas
+      const todasCompletadas = documentos.every((doc) =>
+        doc.ActividadesRealizadas?.every((actividad: any) => actividad.Completo === true)
+      );
+
+      console.log(`Actividades completadas: ${todasCompletadas}`);
+      return todasCompletadas;
+    } catch (error) {
+      console.error('Error al verificar actividades completadas:', error);
+      return false;
+    }
+  }
+
+
 
   // Otros métodos (sin cambios)...
 
@@ -266,7 +376,6 @@ export class FirebaseService {
   }
   
   
-
   async guardarRegistroActividades(registro: any): Promise<void> {
     try {
       await this.firestore.collection('RegistroActividadesDiarias').add(registro);
@@ -288,33 +397,33 @@ export class FirebaseService {
         )
         .get()
         .toPromise();
-  
+
       // Verifica si el documento existe
       if (snapshot && !snapshot.empty) {
         const registroDoc = snapshot.docs[0]; // Obtiene el documento más reciente
         const registroId = registroDoc.id; // ID del documento
-  
+
         // Define un tipo explícito para registroData
         const registroData = registroDoc.data() as { ActividadesRealizadas: any[] }; // Añade el tipo esperado
-  
+
         // Verifica si el campo `ActividadesRealizadas` existe y es un array
         if (!registroData || !Array.isArray(registroData.ActividadesRealizadas)) {
           console.warn(`El documento con ID ${registroId} no tiene actividades registradas o el campo es inválido.`);
           return; // Salir si no hay actividades para actualizar
         }
-  
+
         // Estructura las actividades actualizadas
         const actividadesActualizadas = actividades.map((actividad) => ({
           ...actividad,
           Completo: actividad.Completo ?? false, // Asegúrate de mantener la propiedad Completo
         }));
-  
+
         // Actualiza el documento en Firebase
         await this.firestore
           .collection('RegistroActividadesDiarias')
           .doc(registroId)
           .update({ ActividadesRealizadas: actividadesActualizadas });
-  
+
         console.log('Actividades actualizadas correctamente en Firebase para el registro:', registroId);
       } else {
         console.warn('No se encontró un registro de actividades para el usuario:', idUsuario);
@@ -323,8 +432,4 @@ export class FirebaseService {
       console.error('Error al actualizar las actividades:', error);
     }
   }
-  
-  
-
-
 }

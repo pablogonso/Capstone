@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import axios from 'axios';
 import { FirebaseService } from '../services/firebase.service';
 import { PlanService } from '../services/plan.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-plan-pruebas-langchain',
@@ -21,7 +22,8 @@ export class PlanPruebasLangchainPage implements OnInit {
   constructor(
     private firebaseService: FirebaseService,
     private planService: PlanService,
-    private route: ActivatedRoute // Importar ActivatedRoute para obtener queryParams
+    private route: ActivatedRoute, // Importar ActivatedRoute para obtener queryParams
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -221,6 +223,11 @@ export class PlanPruebasLangchainPage implements OnInit {
     }
   }
 
+  irAlHome() {
+    this.router.navigate(['/pag-bienvenida']).then(() => {
+      window.location.reload(); // Recarga la página actual
+    });
+  }
 
 
 }

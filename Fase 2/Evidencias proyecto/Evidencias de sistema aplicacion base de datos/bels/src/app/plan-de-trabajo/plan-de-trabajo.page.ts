@@ -3,6 +3,7 @@ import { planesTrabajo, preguntasPlanes } from '../Modelo/tareas.model';
 import { ModalController, ModalOptions } from '@ionic/angular';
 import { VerActividadesComponent } from '../componentes/ver-actividades/ver-actividades.component';
 import { FirebaseService } from '../services/firebase.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-plan-de-trabajo',
@@ -14,7 +15,8 @@ export class PlanDeTrabajoPage implements OnInit {
 
   constructor(
     private modalController: ModalController,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -30,7 +32,7 @@ export class PlanDeTrabajoPage implements OnInit {
             {
               idGrupo: 'ActividadesDiarias', // Identificador del grupo
               titulo: ultimoRegistro.data.Grupo || 'Sin Grupo', // Usamos el campo `Grupo` de la base de datos
-              descripcion: 'Actividades registradas recientemente.', // Descripción personalizada
+              descripcion: ' ', // Descripción personalizada
               preguntasPlanes: ultimoRegistro.data.ActividadesRealizadas.map(
                 (actividad: { Actividad: string; Completo: boolean }) => ({
                   plan: actividad.Actividad,
@@ -116,4 +118,11 @@ export class PlanDeTrabajoPage implements OnInit {
       componentProps: { planesTrabajo },
     });
   }
+
+  irAlHome() {
+    this.router.navigate(['/pag-bienvenida']).then(() => {
+      window.location.reload(); // Recarga la página actual
+    });
+  }
+
 }

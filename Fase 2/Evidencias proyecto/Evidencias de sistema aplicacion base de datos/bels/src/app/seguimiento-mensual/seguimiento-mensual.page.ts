@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-seguimiento-mensual',
@@ -10,7 +11,7 @@ export class SeguimientoMensualPage implements OnInit {
   dias: any[] = []; // Lista de días con actividades
   idUsuario: string | null = null; // ID del usuario actualmente logueado
 
-  constructor(private firebaseService: FirebaseService) {}
+  constructor(private firebaseService: FirebaseService, private router: Router) {}
 
   async ngOnInit() {
     try {
@@ -66,4 +67,11 @@ export class SeguimientoMensualPage implements OnInit {
   toggleDia(dia: any) {
     dia.expandido = !dia.expandido;
   }
+
+  irAlHome() {
+    this.router.navigate(['/pag-bienvenida']).then(() => {
+      window.location.reload(); // Recarga la página actual
+    });
+  }
+
 }

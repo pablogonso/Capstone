@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { FirebaseService } from '../../services/firebase.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ver-actividades',
@@ -15,11 +16,11 @@ export class VerActividadesComponent implements OnInit {
 
   constructor(
     private modalController: ModalController,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private router: Router // Para redirigir a la página de felicitaciones
   ) {}
 
   async ngOnInit() {
-    // Carga inicial similar al código actual
     if (!this.planesTrabajo || !this.planesTrabajo.idUsuario) {
       console.warn('El plan de trabajo no tiene un ID de usuario válido.');
       return;
@@ -32,7 +33,6 @@ export class VerActividadesComponent implements OnInit {
     if (ultimoRegistro && ultimoRegistro.data.ActividadesRealizadas) {
       this.clasificarActividades(ultimoRegistro.data.ActividadesRealizadas);
     }
-    
   }
 
   clasificarActividades(actividades: any[]) {
@@ -61,32 +61,66 @@ export class VerActividadesComponent implements OnInit {
         ...this.actividadesTarde,
         ...this.actividadesNoche,
       ];
-  
-      // Validar que todas las actividades tienen la estructura necesaria
+
       const actividadesValidas = todasLasActividades.filter((actividad) =>
         actividad.Actividad && typeof actividad.Completo === 'boolean'
       );
-  
+
       if (actividadesValidas.length === 0) {
         console.warn('No hay actividades válidas para guardar.');
         return;
       }
-  
+
       // Actualiza las actividades en Firebase
       await this.firebaseService.actualizarActividades(
         this.planesTrabajo.idUsuario,
         actividadesValidas
       );
-  
+
       console.log('Cambios guardados correctamente.');
-  
-      // Cierra el modal y notifica al componente principal
+
+      // Verifica si es el día de corte y realiza la lógica del corte
+      const esDiaDeCorte = await this.verificarDiaDeCorte();
+
+      if (esDiaDeCorte) {
+        console.log('Es día de corte. Verificando actividades completadas...');
+        const todasCompletadas = await this.firebaseService.verificarActividadesCompletadas(
+          this.planesTrabajo.idUsuario
+        );
+
+        if (todasCompletadas) {
+          console.log('Todas las actividades están completadas. Actualizando plan...');
+          const planActualizado = await this.firebaseService.actualizarPlanCompletado(
+            this.planesTrabajo.idUsuario
+          );
+
+          if (planActualizado) {
+            console.log('Plan completado con éxito. Redirigiendo...');
+            this.router.navigate(['/felicitaciones']); // Redirige a la página de felicitaciones
+          } else {
+            console.warn('No se pudo actualizar el plan como completado.');
+          }
+        } else {
+          console.log('No todas las actividades están completadas.');
+        }
+      } else {
+        console.log('Hoy no es día de corte.');
+      }
+
+      // Cierra el modal
       this.cerrarModal(true);
     } catch (error) {
       console.error('Error al guardar los cambios:', error);
-      // Mostrar mensaje visible al usuario en la UI (puedes agregar un servicio de notificaciones)
     }
   }
+
+  async verificarDiaDeCorte(): Promise<boolean> {
+    const hoy = new Date();
+    const diaActual = hoy.toLocaleDateString('es-ES', { weekday: 'long' }); // Obtiene el día en español
+    const diaCorte = await this.firebaseService.obtenerDiaDeCorte(); // Obtiene el día de corte desde el servicio
+    return diaActual.toLowerCase() === diaCorte.toLowerCase(); // Compara ignorando mayúsculas/minúsculas
+  }
+  
 
   cerrarModal(actualizado: boolean = false) {
     this.modalController.dismiss({ actualizado });
