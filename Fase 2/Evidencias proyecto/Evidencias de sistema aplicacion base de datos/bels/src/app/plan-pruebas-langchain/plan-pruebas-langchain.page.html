@@ -5,6 +5,10 @@
 </ion-header>
 
 <ion-content>
+
+<ion-card class="card-principal">
+
+<p class="text">A continuacion se generará tu plan de trabajo personalizado</p>
 <ion-button expand="full" (click)="ejecutarFunciones()" [disabled]="buttonDisabled">
   <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
   <span *ngIf="!cargando">Generar plan de trabajo</span>
@@ -13,7 +17,7 @@
 <ion-button expand="block" color="primary" (click)="irAlHome()">
   Volver al inicio
 </ion-button>
-  
+</ion-card>  
 
   <div *ngIf="recomendaciones && recomendaciones.preguntasPlanes">
     <h2>Grupo: {{ grupoActivo }}</h2>
