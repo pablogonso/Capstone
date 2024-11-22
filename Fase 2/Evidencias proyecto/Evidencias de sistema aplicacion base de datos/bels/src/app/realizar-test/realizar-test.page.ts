@@ -65,7 +65,11 @@ export class RealizarTestPage implements OnInit {
   obtenerPreguntasPorGrupo() {
     this.belsService.getPreguntas().subscribe(data => {
       // Filtrar las preguntas y asegurar que todas pertenecen al mismo grupo
-      this.preguntas = data.filter(p => p.Grupo === this.grupoActivo);
+      this.preguntas = data.filter(p => p.Grupo === this.grupoActivo).map(p => ({
+        ...p,
+        valor: null, // Configurar para que no haya selección inicial
+        estado: false // Estado inicial como no respondido
+      }));
       if (this.preguntas.length > 0) {
         // Asignar el grupo activo solo con el Grupo de la primera pregunta
         this.grupoActivo = this.preguntas[0].Grupo;
@@ -89,8 +93,16 @@ export class RealizarTestPage implements OnInit {
   }
 
   actualizarEstado(indice: number) {
-    this.preguntas[indice].estado = true;
-    this.verificarProgreso();
+    const valor = this.preguntas[indice].valor;
+
+    if (valor !== null && valor !== undefined) {
+      this.preguntas[indice].estado = true; // Marca como respondida
+      console.log(`Pregunta ${indice} actualizada con valor: ${valor}`);
+      this.verificarProgreso();
+    } else {
+      this.preguntas[indice].estado = false; // Marcar como no respondida
+      console.warn(`Pregunta ${indice} no tiene un valor válido.`);
+    }
   }
 
   async enviarFormulario() {

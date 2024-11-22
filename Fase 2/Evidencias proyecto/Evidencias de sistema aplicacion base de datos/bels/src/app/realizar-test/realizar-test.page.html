@@ -23,7 +23,11 @@
 
       <ion-card-content>
         <!-- Grupo de radio en horizontal con valores debajo -->
-        <ion-radio-group [(ngModel)]="preguntas[indiceActual].valor" name="valor{{indiceActual}}" (ionChange)="actualizarEstado(indiceActual)">
+        <ion-radio-group
+          [(ngModel)]="preguntas[indiceActual].valor"
+          name="valor{{indiceActual}}"
+          (ionChange)="actualizarEstado(indiceActual)"
+        >
           <div class="horizontal-radio-group">
             <div class="radio-item" *ngFor="let valor of [0, 1, 2, 3, 4]">
               <ion-radio slot="start" [value]="valor"></ion-radio>
@@ -31,6 +35,7 @@
             </div>
           </div>
         </ion-radio-group>
+
       </ion-card-content>
     </ion-card>
 
