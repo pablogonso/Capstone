@@ -85,13 +85,19 @@
             #confirmPassword="ngModel"
           ></ion-input>
         </ion-item>
-        <div *ngIf="contrasena !== confirmarContrasena && confirmPassword.dirty">
+        <div *ngIf="(contrasena !== confirmarContrasena) && confirmPassword.dirty">
           <ion-text color="danger">
             <p>Las contraseñas no coinciden.</p>
           </ion-text>
         </div>
 
-        <ion-button expand="full" type="submit" [disabled]="userForm.invalid">Registrar</ion-button>
+        <!-- Botón deshabilitado si las contraseñas no coinciden -->
+        <ion-button 
+          expand="full" 
+          type="submit" 
+          [disabled]="userForm.invalid || contrasena !== confirmarContrasena">
+          Registrar
+        </ion-button>
       </form>
     </ion-card-content>
   </ion-card>

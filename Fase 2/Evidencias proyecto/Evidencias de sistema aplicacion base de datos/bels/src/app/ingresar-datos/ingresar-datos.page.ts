@@ -12,7 +12,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore'; // Para guard
 export class IngresarDatosPage {
   nombre: string = '';
   apellido: string = '';
-  edad: number = 0; // Inicializado en 0
+  edad: | null = null; // Inicializado en 0
   correo: string = '';
   contrasena: string = '';
   confirmarContrasena: string = '';
