@@ -1,12 +1,6 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>{{ planesTrabajos[0]?.titulo || 'Plan de Trabajo' }}</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
   <!-- Verifica que haya datos en planesTrabajos -->
-  <ion-card *ngIf="planesTrabajos.length > 0" class="progress-card">
+  <ion-card *ngIf="planesTrabajos.length > 0">
     <!-- Progreso circular -->
     <circle-progress
       [percent]="obtenerPorcentaje(planesTrabajos[0])"
@@ -22,7 +16,8 @@
 
     <!-- Información del plan -->
     <ion-card-header>
-      <ion-card-title>{{ planesTrabajos[0]?.titulo || 'Plan no definido' }}</ion-card-title>
+      <p class="text-style">Plan de trabajo vigente:</p>
+      <ion-card-title><h2>{{ planesTrabajos[0]?.titulo || 'Plan no definido' }}</h2></ion-card-title>
     </ion-card-header>
     </ion-card>
 
