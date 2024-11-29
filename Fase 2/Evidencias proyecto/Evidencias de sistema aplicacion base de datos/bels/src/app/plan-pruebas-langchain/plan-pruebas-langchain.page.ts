@@ -4,7 +4,6 @@ import { FirebaseService } from '../services/firebase.service';
 import { PlanService } from '../services/plan.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
-
 @Component({
   selector: 'app-plan-pruebas-langchain',
   templateUrl: './plan-pruebas-langchain.page.html',
@@ -22,7 +21,7 @@ export class PlanPruebasLangchainPage implements OnInit {
   constructor(
     private firebaseService: FirebaseService,
     private planService: PlanService,
-    private route: ActivatedRoute, // Importar ActivatedRoute para obtener queryParams
+    private route: ActivatedRoute,
     private router: Router
   ) {}
 
@@ -92,7 +91,7 @@ export class PlanPruebasLangchainPage implements OnInit {
   async enviarAlModeloPredictivo(respuestasGrupoActivo: any[]) {
     try {
       console.log("Enviando respuestas al modelo predictivo:", respuestasGrupoActivo);
-
+  
       const response = await axios.post('http://127.0.0.1:5000/api/predict', {
         respuestas: respuestasGrupoActivo,
         ciudad: this.ciudad,
@@ -102,17 +101,17 @@ export class PlanPruebasLangchainPage implements OnInit {
           'Content-Type': 'application/json'
         }
       });
-
+  
       if (response.data && response.data.prediccion) {
         console.log("Resultado del modelo predictivo:", response.data.prediccion);
-
+  
         const preguntasPlanes = response.data.prediccion.map((recomendacion: any) => ({
           pregunta: recomendacion.pregunta,
           plan: recomendacion.recomendacion,
           puntaje: recomendacion.valor,
           horaRecomendacion: this.extraerHoraDeRecomendacion(recomendacion.recomendacion)
         }));
-
+  
         const usuarioIdDocumento = await this.firebaseService.obtenerIdUsuarioDocumento();
         if (!usuarioIdDocumento) {
           console.error('No se encontró el ID de documento de usuario');
@@ -120,7 +119,7 @@ export class PlanPruebasLangchainPage implements OnInit {
           this.buttonDisabled = false;
           return;
         }
-
+  
         let idGrupo = '';
         switch (this.grupoActivo) {
           case "Autocuidado": idGrupo = '1'; break;
@@ -133,10 +132,10 @@ export class PlanPruebasLangchainPage implements OnInit {
             this.buttonDisabled = false;
             return;
         }
-
+  
         const idPlan = await this.planService.generarIdPlan(usuarioIdDocumento);
         const esPuntuacionPerfecta = preguntasPlanes.every((p: any) => p.puntaje === 4);
-
+  
         const planTrabajo = {
           idPlan,
           idGrupo,
@@ -149,12 +148,17 @@ export class PlanPruebasLangchainPage implements OnInit {
           idUsuario: usuarioIdDocumento,
           timestamp: new Date()
         };
-
+  
         await this.planService.guardarPlanTrabajoGrupo(planTrabajo);
         console.log(`Plan de trabajo guardado con ID: ${idPlan}`, planTrabajo);
-
+  
         this.recomendaciones = planTrabajo;
-
+  
+        // Derivar a la página plan-creado
+        this.router.navigate(['/plan-creado'], {
+          
+        });
+  
       } else {
         console.error("No se encontró la predicción en la respuesta del backend.");
         this.buttonDisabled = false;
@@ -163,9 +167,10 @@ export class PlanPruebasLangchainPage implements OnInit {
       console.error("Error al enviar las respuestas al modelo predictivo:", error);
       this.buttonDisabled = false;
     }
-
+  
     this.cargando = false;
   }
+  
 
   private extraerHoraDeRecomendacion(recomendacion: string): string | null {
     const horaRegex = /\b\d{2}:\d{2}:\d{2}\b/;
@@ -175,38 +180,33 @@ export class PlanPruebasLangchainPage implements OnInit {
 
   async poblarRegistroActividades() {
     try {
-      // Verifica si ya se han generado las recomendaciones
       if (!this.recomendaciones || !this.recomendaciones.preguntasPlanes) {
         console.error('No se han generado recomendaciones para poblar RegistroActividadesDiarias.');
         return;
       }
   
-      // Obtén el ID del usuario logeado
       const idUsuario = await this.firebaseService.obtenerIdUsuarioDocumento();
       if (!idUsuario) {
         console.error('No se pudo obtener el ID del usuario logeado.');
         return;
       }
   
-      // Crea las actividades realizadas, incluyendo "horaRecomendacion"
       const actividadesRealizadas = this.recomendaciones.preguntasPlanes.map((pregunta: any) => ({
         Actividad: pregunta.plan,
-        Completo: false, // Estado inicial
-        NumDia: 1, // Día predeterminado
-        Fecha: new Date(), // Fecha actual
-        horaRecomendacion: pregunta.horaRecomendacion || null, // Incluye horaRecomendacion si está disponible
+        Completo: false,
+        NumDia: 1,
+        Fecha: new Date(),
+        horaRecomendacion: pregunta.horaRecomendacion || null,
       }));
   
-      // Construye el documento para Firebase, incluyendo "Grupo"
       const registro = {
         idPlan: this.recomendaciones.idPlan,
         idUsuario,
-        Grupo: this.grupoActivo, // Incluye el grupo activo en el registro
+        Grupo: this.grupoActivo,
         ActividadesRealizadas: actividadesRealizadas,
-        timestamp: new Date(), // Fecha del registro
+        timestamp: new Date(),
       };
   
-      // Guarda el registro en la colecciónx
       await this.firebaseService.guardarRegistroActividades(registro);
       console.log('Registro de actividades diarias guardado:', registro);
     } catch (error) {
@@ -216,8 +216,8 @@ export class PlanPruebasLangchainPage implements OnInit {
   
   async ejecutarFunciones() {
     try {
-      await this.generarRespuestas(); // Espera a que se generen las respuestas
-      this.poblarRegistroActividades(); // Llama a poblar RegistroActividadesDiarias
+      await this.generarRespuestas();
+      this.poblarRegistroActividades();
     } catch (error) {
       console.error('Error al ejecutar funciones:', error);
     }
@@ -225,9 +225,7 @@ export class PlanPruebasLangchainPage implements OnInit {
 
   irAlHome() {
     this.router.navigate(['/pag-bienvenida']).then(() => {
-      window.location.reload(); // Recarga la página actual
+      window.location.reload();
     });
   }
-
-
 }

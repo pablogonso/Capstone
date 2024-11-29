@@ -1,26 +1,25 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      <!-- Muestra el logo dentro del título -->
-      <img class="logo_app" src="assets/icon/BELS.jpeg" alt="Logo de la aplicación" />
-      <!-- Espacio opcional para el texto adicional -->
-      <span style="margin-left: 10px;"></span>
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
 
 <ion-content>
+  <div class="custom-header">
+    <img src="assets/icon/logo.png" alt="Logo de la aplicación" class="logo-app" />
+  </div>
+
   <ion-card>
-    <img src="assets/icon/bels-avatar.png" alt="Descripción de la imagen" class="person-logo" />
+    <div class="image-container">
+      <img src="assets/icon/bels-avatar.png" alt="Descripción de la imagen" class="person-logo" />
+    </div>
     <ion-card-header>
-      <ion-card-title>Bienvenido al Test BELS</ion-card-title>
+      <ion-card-title class="text">¡Bienvenida/o al test BELS!</ion-card-title>
     </ion-card-header>
+
     <ion-card-content>
-      <strong class="large-text">
-        Aplicación en la cual podrás generar un plan de trabajo en base a los resultados del test
-      </strong>
+      <div class="large-text">
+        BELS nace para transformar vidas. Nuestra misión es empoderarte para alcanzar tu máximo bienestar, mejorando tu salud mental y calidad de vida. Con la potencia de la inteligencia artificial, diseñamos planes de trabajo que te ayudarán a mejorar tu vida. Tú tienes la fuerza; nosotros te ayudamos a descubrirla. ¡Es momento de vivir plenamente!
+      </div>
       <br>
-      <ion-button expand="full" routerLink="/login">Continuar</ion-button>
+      <br>
+      <br>
+     <ion-button expand="full" routerLink="/login" class="boton-continuar">Continuar</ion-button>
     </ion-card-content>
   </ion-card>
 </ion-content>

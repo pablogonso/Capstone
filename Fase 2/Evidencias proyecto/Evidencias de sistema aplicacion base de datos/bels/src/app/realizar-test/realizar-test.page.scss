@@ -7,7 +7,7 @@ ion-card-title,ion-label{
 }
 
 .grupo{
-  font-size: 30px;
+  font-size: 25px;
   font-weight: bolder;
   text-align: center;
   color: black;
@@ -79,6 +79,7 @@ ion-footer {
   width: 100%;
   z-index: 10;
   padding-bottom: 25px; /* Añade un margen inferior */
+  text-align: center;
 }
 
 ion-content {
@@ -94,3 +95,48 @@ ion-content {
     color: black;
     font-family: 'merriweather';
 }
+
+.contenedor-texto-pregunta{
+  padding: 20px;
+}
+
+.texto-pregunta{
+  font-size: 20px;
+  color: black;
+  text-align: center;
+}
+
+ion-card{
+  background-color: rgba(255, 255, 255, 0.3);
+  margin-top: 20px;
+  height: 420px; /* Altura fija */
+  width: 95%; /* O ajusta a un valor fijo como '300px' */
+  max-width: 500px; /* Opcional: para limitar el ancho en pantallas grandes */
+  padding: 20px;
+}
+
+.radio-description {
+  margin-top: 4px; /* Espaciado entre el valor y el texto adicional */
+  padding: auto;
+  font-size: 14px; /* Tamaño del texto */
+  color: #6c757d; /* Gris neutro */
+  text-align: center;
+}
+
+.container-significado-opciones{
+  text-align: center;
+}
+
+.botones-nav{
+  display: flex;
+  text-align: center;
+  margin-top: 25px;
+  justify-content: center;
+
+}
+ion-button {
+  background-color: #3880ff; /* Color del botón */
+  color: white; /* Color del texto del botón */
+  margin: 5px;
+}
+

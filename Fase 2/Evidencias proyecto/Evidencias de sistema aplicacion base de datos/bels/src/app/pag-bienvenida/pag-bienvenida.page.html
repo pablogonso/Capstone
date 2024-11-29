@@ -1,31 +1,51 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Menu principal</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
-  <swiper-container class="swiper-container">
-    <swiper-slide>
-      <img src="assets/icon/slider-izquierdo.jpeg" alt="Imagen 1" class="person-logo" />
-    </swiper-slide>
-    <swiper-slide>
-      <img src="assets/icon/slider_derecho.jpeg" alt="Imagen 2" class="person-logo" />
-    </swiper-slide>
-  </swiper-container>
 
+  <ion-card class="card-bienvenida">
+  <div class="container-bienvenida-usuario">
   <!-- Mostrar el nombre del usuario en la interfaz -->
-  <p *ngIf="nombreUsuario" style="text-align: center;">¡Bienvenido(a), {{ nombreUsuario }}!</p>
+  <p *ngIf="nombreUsuario" class="texto-bienvenida-usuario">¡Bienvenido(a), <strong>{{ nombreUsuario }}</strong>!</p>
+  <br>
+  </div>
 
-  <ion-card>
-    <ion-card-content>
-      <!-- El botón "Realizar Test" estará deshabilitado si el plan no está completo -->
-      <ion-button expand="full" routerLink="/instrucciones" [disabled]="!botonRealizarTestHabilitado">
-        Realizar Test
-      </ion-button>
-      <ion-button expand="full" routerLink="/plan-de-trabajo">Plan de Trabajo</ion-button>
-      <ion-button expand="full" routerLink="/seguimiento-mensual">Seguimiento mensual</ion-button>
-      <ion-button expand="full" (click)="logout()">Cerrar sesión</ion-button>
-    </ion-card-content>
+  <div class="container-texto-instrucciones">
+    <p>Esta es la página de bienvenida. Elige una de las siguientes opciones:</p>
+  </div>
+
+  <ion-grid>
+    <ion-row>
+      <!-- Realizar Test -->
+      <ion-col size="6" class="menu-item">
+        <ion-button fill="clear" [disabled]="!botonRealizarTestHabilitado" routerLink="/instrucciones">
+          <img src="../../assets/icon/realizar-test.png" class="menu-image" alt="Realizar Test">
+        </ion-button>
+        <p>Realizar Test</p>
+      </ion-col>
+
+      <!-- Plan de Trabajo -->
+      <ion-col size="6" class="menu-item">
+        <ion-button fill="clear" routerLink="/plan-de-trabajo">
+          <img src="../../assets/icon/plan-trabajo.png" class="menu-image" alt="Plan de Trabajo">
+        </ion-button>
+        <p>Plan de Trabajo</p>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <!-- Seguimiento Mensual -->
+      <ion-col size="6" class="menu-item">
+        <ion-button fill="clear" routerLink="/seguimiento-mensual">
+          <img src="../../assets/icon/seguimiento-mensual.png" class="menu-image" alt="Seguimiento Mensual">
+        </ion-button>
+        <p>Seguimiento Mensual</p>
+      </ion-col>
+
+      <!-- Cerrar Sesión -->
+      <ion-col size="6" class="menu-item">
+        <ion-button fill="clear" (click)="logout()">
+          <img src="../../assets/icon/cerrar-sesion.png" class="menu-image" alt="Cerrar Sesión">
+        </ion-button>
+        <p>Cerrar Sesión</p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
   </ion-card>
 </ion-content>

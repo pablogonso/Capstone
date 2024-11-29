@@ -1,33 +1,18 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Plan de trabajo IA</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
-
-<ion-card class="card-principal">
-
-<p class="text">A continuacion se generará tu plan de trabajo personalizado</p>
-<ion-button expand="full" (click)="ejecutarFunciones()" [disabled]="buttonDisabled">
-  <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
-  <span *ngIf="!cargando">Generar plan de trabajo</span>
-</ion-button>
-
-<ion-button expand="block" color="primary" (click)="irAlHome()">
-  Volver al inicio
-</ion-button>
-</ion-card>  
-
-  <div *ngIf="recomendaciones && recomendaciones.preguntasPlanes">
-    <h2>Grupo: {{ grupoActivo }}</h2>
-    
-    <ion-card *ngFor="let item of recomendaciones.preguntasPlanes">
-      <ion-card-content>
-        <p><strong>Pregunta:</strong> {{ item.pregunta }}</p>
-        <p><strong>Puntaje:</strong> {{ item.puntaje }}</p>
-        <p><strong>Recomendación:</strong> {{ item.plan }}</p>
-      </ion-card-content>
-    </ion-card>
+  <div class="image-container">
+    <img src="assets/icon/planCompletado.png" alt="Plan completado" class="person-logo" />
   </div>
+
+  <ion-card class="card-principal">
+    <p class="text">¡Has respondido todas las preguntas! Ahora puedes generar tu plan de trabajo personalizado.</p>
+
+    <ion-button expand="full" (click)="ejecutarFunciones()" [disabled]="buttonDisabled">
+      <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
+      <span *ngIf="!cargando">Generar plan de trabajo</span>
+    </ion-button>
+
+    <ion-button expand="block" color="primary" (click)="irAlHome()">
+      Volver al inicio
+    </ion-button>
+  </ion-card>
 </ion-content>

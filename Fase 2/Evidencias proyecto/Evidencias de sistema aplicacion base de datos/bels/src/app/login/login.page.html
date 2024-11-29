@@ -1,13 +1,8 @@
-<ion-header>
-  <ion-toolbar>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
-  
+ 
   <ion-title>
     <!-- Muestra el logo dentro del título -->
-    <img class="logo_app" src="assets/icon/BELS.jpeg" alt="Logo de la aplicación" />
+    <img class="logo_app" src="assets/icon/logo.png" alt="Logo de la aplicación" />
     <!-- Espacio opcional para el texto adicional -->
     <p class="text">Basic Everyday Living Skills</p>
   </ion-title>
@@ -15,22 +10,22 @@
   <ion-card>
 
     <ion-card-content class="card">
-      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="form">
         <ion-item>
-          <ion-label position="stacked">Correo electrónico</ion-label>
+          <ion-label position="stacked" class="texto-label">Correo electrónico</ion-label>
           <ion-input class="custom-input" type="email" [(ngModel)]="email" name="email" required></ion-input>
         </ion-item>
         
         <ion-item>
-          <ion-label position="stacked">Contraseña</ion-label>
+          <ion-label position="stacked" class="texto-label">Contraseña</ion-label>
           <ion-input class="custom-input" type="password" [(ngModel)]="password" name="password" required></ion-input>
         </ion-item>        
-
-        <ion-button expand="full" type="submit" [disabled]="!loginForm.form.valid">Iniciar Sesión</ion-button>
-        <ion-button class="crear-cuenta" expand="full" (click)="goToRegister()">Crear cuenta</ion-button>
-        <ion-button class="olidaste-contra" expand="block" fill="outline" (click)="recuperarContrasena()">¿Olvidaste tu contraseña?</ion-button>
+      <ion-button expand="full" type="submit" [disabled]="!loginForm.form.valid">Iniciar Sesión</ion-button>
+      <ion-button class="crear-cuenta" expand="full" (click)="goToRegister()">Crear cuenta</ion-button>
+      <ion-button class="olidaste-contra" expand="block" fill="outline" (click)="recuperarContrasena()">Olvidé mi contraseña</ion-button>
       </form>
-    </ion-card-content>
+
+      </ion-card-content>
   </ion-card>
 
 </ion-content>

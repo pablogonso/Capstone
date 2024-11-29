@@ -1,19 +1,58 @@
 /* home.page.scss */
 .large-text {
-  font-size: 1.5em; /* Aumenta el tamaño del texto */
+  font-size: 1.25em; /* Aumenta el tamaño del texto */
   font-weight: normal; /* Mantiene el estilo en negrita */
-  color: black;
-}
-
-.logo_app{
-height: 100px;
+  color: rgb(39, 27, 2);
+  text-align: justify;
 }
 
 .person-logo{
   border-radius: 50%;
+  width: 60%;
+  display: flex;
+  margin-top: 100px;
 }
 
-* {
-  font-family: 'Merriweather', serif;
-  font-weight: 600; /* Puedes especificar el peso que prefieras */
+/* login.page.scss */
+ion-card {
+  margin: 20px; /* Espaciado alrededor de la tarjeta */
+  border-radius: 10px; /* Bordes redondeados */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Sombra suave */
+  background: transparent;
+  box-shadow: none;
+}
+
+.image-container {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+}
+
+img {
+  max-width: 100%; /* Ajusta la imagen para ser responsiva */
+}
+
+.text{
+  font-size: 25px;
+  font-weight: 700;
+  text-align: center;
+  color: #063689;
+}
+
+.custom-header {
+  position: absolute; /* Fija el div en la parte superior */
+  top: 0;
+  left: 0;
+  width: 100%; /* Asegura que el header ocupe el ancho completo */
+  padding: 10px; /* Espaciado interno */
+  background: transparent; /* Fondo completamente transparente */
+  z-index: 10; /* Asegura que esté sobre el contenido */
+
+  display: flex;
+  align-items: center; /* Centra verticalmente el contenido */
+  justify-content: start; /* Ubica el logo al inicio (izquierda) */
+}
+
+.logo-app {
+  height: 100px; /* Ajusta el tamaño del logo */
+  margin-left: 10px; /* Espaciado desde el borde izquierdo */
 }

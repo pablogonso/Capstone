@@ -1,15 +1,28 @@
 .text{
-    font-size: 30px;
+    font-size: 20px;
     color: black;
-    font-family: 'merriweather';
-    font-style: italic;
+    font-family: 'Roboto';
     text-align: center;
 }
 
 
 .card-principal{
-    margin-top: 50%;
+    margin-top: 30px;
     padding: 30px;
     display: flex;
     flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: none;
+}
+
+.image-container {
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+  }
+  
+.person-logo{
+border-radius: 50%;
+width: 60%;
+display: flex;
+margin-top: 100px;
 }

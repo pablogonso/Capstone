@@ -76,9 +76,14 @@ const routes: Routes = [
     canActivate: [AuthGuard] // Protección con AuthGuard
   },
   {
+    path: 'plan-creado',
+    loadChildren: () => import('./plan-creado/plan-creado.module').then( m => m.PlanCreadoPageModule)
+  },
+  {
     path: '**',
     redirectTo: 'home' // Redirigir a 'home' cualquier ruta no encontrada
   }
+
 ];
 
 @NgModule({

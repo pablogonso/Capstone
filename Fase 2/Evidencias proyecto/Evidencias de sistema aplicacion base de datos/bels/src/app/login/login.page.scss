@@ -3,6 +3,13 @@ ion-card {
   margin: 20px; /* Espaciado alrededor de la tarjeta */
   border-radius: 10px; /* Bordes redondeados */
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Sombra suave */
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Ajustes para el formulario */
+form {
+  background: transparent; /* Fondo del formulario transparente */
 }
 
 ion-card-header {
@@ -10,17 +17,32 @@ ion-card-header {
 }
 
 ion-card-content p {
-  margin-bottom: 15px; /* Espaciado debajo del párrafo */
+  background: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+  backdrop-filter: blur(10px); /* Agrega un efecto de desenfoque */
+  border-radius: 12px; /* Bordes redondeados */
+  padding: 20px; /* Espaciado interno */
+}
+
+/* Ajustes para los campos de entrada */
+ion-item {
+  --background: transparent; /* Hace los items transparentes */
+  --border-color: rgba(255, 255, 255, 0.3); /* Bordes semitransparentes */
+  --color: #ffffff; /* Texto blanco */
+}
+
+ion-input {
+  --background: transparent; /* Hace los inputs transparentes */
+  color: #000000; /* Texto de los inputs blanco */
 }
 
 ion-button {
   background-color: #3880ff; /* Color del botón */
   color: white; /* Color del texto del botón */
-  margin: 20px;
+  margin: 5px;
 }
 
 * {
-  font-family: 'Merriweather', serif;
+  
   font-weight: 500; /* Puedes especificar el peso que prefieras */
   font-size: 20px;
 }
@@ -64,4 +86,6 @@ ion-card-title {
   height: auto;
   margin-top: 20px;
 }
-
+.texto-label{
+  color: rgb(56, 32, 4);
+}

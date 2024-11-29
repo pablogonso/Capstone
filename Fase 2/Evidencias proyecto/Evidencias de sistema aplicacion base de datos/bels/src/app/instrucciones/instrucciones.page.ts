@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
 import { NavController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-instrucciones',
@@ -10,7 +11,8 @@ import { NavController } from '@ionic/angular';
 export class InstruccionesPage {
   constructor(
     private firebaseService: FirebaseService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private router: Router
   ) {}
 
   async onRealizarTestClick() {
@@ -64,5 +66,11 @@ export class InstruccionesPage {
     const grupos = ['Autocuidado', 'Habilidades Domésticas', 'Habilidades Comunitarias', 'Relaciones Sociales'];
     const indiceActual = grupos.indexOf(grupoActual);
     return grupos[indiceActual + 1] || 'Autocuidado'; // Si es el último grupo, vuelve al primero
+  }
+
+  irAlHome() {
+    this.router.navigate(['/pag-bienvenida']).then(() => {
+      // Recarga la página actual
+    });
   }
 }

@@ -1,14 +1,7 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Realizar Test BELS</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content *ngIf="preguntas.length > 0">
   <ion-title>
     <!-- Muestra el logo dentro del título -->
-    <img class="logo_app" src="assets/icon/BELS.jpeg" alt="Logo de la aplicación" />
-    <p class="text">Basic Everyday Living Skills</p>
+    <img class="logo_app" src="assets/icon/logo.png" alt="Logo de la aplicación" />
   </ion-title>
 
   
@@ -17,9 +10,11 @@
     <ion-card *ngIf="preguntas[indiceActual].Grupo === grupoActivo; else bloqueado">
       <p class="grupo">{{ preguntas[indiceActual].Grupo }}</p>
 
-      <ion-card-header>
-        <ion-card-title>{{ preguntas[indiceActual].pregunta }}</ion-card-title>
-      </ion-card-header>
+      <div class="contenedor-texto-pregunta">
+        <p class="texto-pregunta">
+          {{ preguntas[indiceActual].pregunta }}
+        </p>
+      </div>
 
       <ion-card-content>
         <!-- Grupo de radio en horizontal con valores debajo -->
@@ -32,11 +27,17 @@
             <div class="radio-item" *ngFor="let valor of [0, 1, 2, 3, 4]">
               <ion-radio slot="start" [value]="valor"></ion-radio>
               <ion-label class="below-radio">{{ valor }}</ion-label>
+              <!-- Texto adicional debajo de los extremos -->
             </div>
           </div>
         </ion-radio-group>
-
+        <div class="container-significado-opciones">
+          <p>Significado de los extremos:</p>
+          <p>Opción 0: Total imposibilidad de realizar la tarea</p>
+          <p>Opción 4: Total posibilidad de realizar la tarea</p>
+        </div>
       </ion-card-content>
+      
     </ion-card>
 
     <!-- Mostrar contenido bloqueado cuando el grupo no es el activo -->
@@ -52,26 +53,12 @@
     </ng-template>
   </form>
 
-  <ion-card id="instrucciones" class="instrucciones">
-    <ion-card-content>
-      <p class="explicacion">Significancia del 0 y 4 </p>
-      <ul>
-        <li><strong>0</strong>: Completamente dependiente</li>
-        <li><strong>4</strong>: Completamente independiente</li>
-      </ul>
-    </ion-card-content>
-  </ion-card>
-
-
-  <!-- Pie de página fijo con los botones -->
-  <ion-footer>
-    <ion-toolbar>
-      <!-- Botones de navegación y envío en el footer fijo -->
-      <ion-button expand="full" (click)="siguiente()" [disabled]="indiceActual === preguntas.length - 1">Siguiente</ion-button>
-      <ion-button expand="full" (click)="anterior()" [disabled]="indiceActual === 0">Anterior</ion-button>
-      <ion-button expand="full" type="submit" *ngIf="indiceActual === preguntas.length - 1">Enviar Respuestas</ion-button>
-    </ion-toolbar>
-  </ion-footer>
+    <!-- Pie de página fijo con los botones -->
+  <div class="botones-nav">
+    <ion-button expand="full" (click)="anterior()" [disabled]="indiceActual === 0">Anterior</ion-button>
+    <ion-button expand="full" (click)="siguiente()" [disabled]="indiceActual === preguntas.length - 1">Siguiente</ion-button>
+    <ion-button expand="full" type="submit" *ngIf="indiceActual === preguntas.length - 1">Enviar Respuestas</ion-button>
+  </div>
 </ion-content>
 
 <!-- Mostrar mensaje cuando no haya preguntas -->

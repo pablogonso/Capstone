@@ -30,6 +30,7 @@
     "@google/generative-ai": "^0.20.0",
     "@ionic/angular": "^8.0.0",
     "axios": "^1.7.7",
+    "canvas-confetti": "^1.9.3",
     "firebase": "^10.14.0",
     "firebase-admin": "^12.7.0",
     "firebase-functions": "^6.1.0",

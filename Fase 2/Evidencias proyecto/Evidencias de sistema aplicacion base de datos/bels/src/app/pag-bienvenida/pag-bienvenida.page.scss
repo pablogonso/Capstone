@@ -1,9 +1,45 @@
-.swiper-container {
-    width: 80%;
-    height: 70%;
-  }
+ion-grid {
+  margin-top: 50px;
+  padding: 20px;
+  text-align: center;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.menu-image {
+  width: 70px; /* Ajusta el tamaño de las imágenes según necesites */
+  height: 70px;
+  margin-bottom: 8px;
+}
+
+p {
+  font-size: 18px;
+  margin: 0;
+  color: rgb(39, 27, 2);
+}
+
+.container-bienvenida-usuario{
+  margin-top: 100px;
   
-ion-button{
-  font-size: 20px;
-  margin: 14px;
+}
+
+.texto-bienvenida-usuario{
+  text-align: center;
+  font-size: 2rem;
+}
+
+.container-texto-instrucciones{
+  margin-top: 25px;
+  padding: 20px;
+  text-align: center;
+}
+
+.card-bienvenida{
+  margin-top: 50px;
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow: none;
 }

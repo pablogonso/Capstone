@@ -36,5 +36,35 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
 
+/* Importar fuentes desde Google */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
+/* Configuración de fondo con imagen */
+body, ion-app, ion-content {
+    background: url('../../bels/src/img/background.png') no-repeat center center fixed;
+    background-size: cover;
+    background-attachment: fixed; 
+    background-position: center;
+    color: #ffffff; /* Cambia el color del texto si es necesario */
+    font-family: 'Roboto', sans-serif;
+  }
+  
+/* Asegúrate de que el fondo de ion-content no sobrescriba */
+ion-content {
+  --background: transparent;
+  color: #ffffff; /* Ajusta el texto para que sea visible */
+}
 
+form {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+ion-header, ion-toolbar {
+  --background: transparent !important; /* Hace el fondo del header transparente */
+  --ion-background-color: transparent !important; /* Elimina cualquier color de fondo */
+  box-shadow: none; /* Elimina sombras entre el header y el contenido */
+  border: none; /* Elimina cualquier borde */
+  z-index: 10; /* Asegura que esté por encima del contenido */
+}

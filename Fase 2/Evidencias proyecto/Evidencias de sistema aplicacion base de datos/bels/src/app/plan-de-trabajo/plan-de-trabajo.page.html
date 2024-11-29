@@ -6,7 +6,7 @@
 
 <ion-content>
   <!-- Verifica que haya datos en planesTrabajos -->
-  <ion-card *ngIf="planesTrabajos.length > 0">
+  <ion-card *ngIf="planesTrabajos.length > 0" class="progress-card">
     <!-- Progreso circular -->
     <circle-progress
       [percent]="obtenerPorcentaje(planesTrabajos[0])"
