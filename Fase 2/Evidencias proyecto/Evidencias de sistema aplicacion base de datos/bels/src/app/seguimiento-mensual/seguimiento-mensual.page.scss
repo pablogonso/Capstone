@@ -1,4 +1,4 @@
-:host {
+
   ion-item {
     --background: #f9f9f9;
   }
@@ -6,18 +6,57 @@
   .sub-lista {
     margin-top: 10px; /* Espacio adicional */
     padding: 0 16px;
-    background-color: #f1f1f1;
+    background: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.3);
+  --background: rgba(255, 255, 255, 0.3);
+    
   }
 
   /* Estilo para el título "Completadas" */
   .completadas-title {
     color: green; /* Cambia el color a verde */
     font-weight: bold;
+    background: rgba(255, 255, 255, 0.3);
   }
 
   /* Estilo para el título "No Completadas" */
   .no-completadas-title {
     color: red; /* Cambia el color a rojo */
     font-weight: bold;
+    background: rgba(255, 255, 255, 0.3);
   }
+
+
+ion-item, ion-divider{
+  background: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.3);
+  --background: rgba(255, 255, 255, 0.3);
 }
+
+ion-list{
+  background: transparent;
+}
+
+.lista-principal{
+  margin-top: 100px;
+}
+
+.custom-header {
+  position: absolute; /* Fija el div en la parte superior */
+  top: 0;
+  left: 0;
+  width: 100%; /* Asegura que el header ocupe el ancho completo */
+  padding: 10px; /* Espaciado interno */
+  background: transparent; /* Fondo completamente transparente */
+  z-index: 10; /* Asegura que esté sobre el contenido */
+
+  display: flex;
+  align-items: center; /* Centra verticalmente el contenido */
+  justify-content: start; /* Ubica el logo al inicio (izquierda) */
+}
+
+.logo-app {
+  height: 100px; /* Ajusta el tamaño del logo */
+  margin-left: 10px; /* Espaciado desde el borde izquierdo */
+}
+

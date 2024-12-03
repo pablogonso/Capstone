@@ -1,17 +1,10 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Seguimiento Mensual</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>  
 
-<ion-content>
+  <div class="custom-header">
+    <img src="assets/icon/logo.png" alt="Logo de la aplicación" class="logo-app" />
+  </div>
 
-  <ion-button expand="block" color="primary" (click)="irAlHome()">
-    Volver al inicio
-  </ion-button>
-  
-  
-  <ion-list>
+  <ion-list class="lista-principal">
     <!-- Lista principal de días -->
     <ng-container *ngFor="let dia of dias">
       <ion-item (click)="toggleDia(dia)">
@@ -36,4 +29,9 @@
       </ion-list>
     </ng-container>
   </ion-list>
+
+  <ion-button expand="block" color="primary" (click)="irAlHome()">
+    Volver al inicio
+  </ion-button>
+
 </ion-content>

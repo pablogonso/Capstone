@@ -36,6 +36,7 @@
     "firebase-functions": "^6.1.0",
     "flask": "^0.2.10",
     "flask-cors": "^0.0.1",
+    "ionic": "^5.4.16",
     "ionicons": "^7.0.0",
     "ng-circle-progress": "^1.7.1",
     "node": "^20.18.0",
