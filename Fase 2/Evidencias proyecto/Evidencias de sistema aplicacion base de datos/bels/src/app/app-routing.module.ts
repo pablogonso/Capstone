@@ -80,9 +80,14 @@ const routes: Routes = [
     loadChildren: () => import('./plan-creado/plan-creado.module').then( m => m.PlanCreadoPageModule)
   },
   {
+    path: 'felicitaciones-final',
+    loadChildren: () => import('./felicitaciones-final/felicitaciones-final.module').then( m => m.FelicitacionesFinalPageModule)
+  },
+  {
     path: '**',
     redirectTo: 'home' // Redirigir a 'home' cualquier ruta no encontrada
   }
+  
 
 ];
 
