@@ -1,13 +1,17 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>felicitaciones-final</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="ion-padding">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">felicitaciones-final</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="image-container">
+    <img src="assets/icon/felicidades.png" alt="Descripción de la imagen" class="person-logo" />
+  </div>
+
+  <div class="container">
+    <h1 class="titulo">¡Has completado todos tus planes de trabajo!</h1>
+    <p class="mensaje">
+      ¡Felicitaciones por alcanzar esta meta tan importante! Has demostrado una increíble dedicación, esfuerzo y compromiso al completar todos tus planes de trabajo. Este logro no solo refleja tu capacidad para superar desafíos, sino también tu determinación para mejorar y crecer día a día. Cada paso que diste te ha llevado a este momento, y es un recordatorio de que con constancia y enfoque, puedes lograr cualquier cosa que te propongas. ¡Sigue soñando en grande, porque este es solo el comienzo de muchos más éxitos por venir! 
+    </p>
+
+    <ion-button expand="block" color="primary" (click)="irAlHome()">
+      Volver al inicio
+    </ion-button>
+  </div>
 </ion-content>

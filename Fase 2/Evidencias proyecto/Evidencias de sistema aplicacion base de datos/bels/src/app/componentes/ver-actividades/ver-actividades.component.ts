@@ -95,8 +95,16 @@ export class VerActividadesComponent implements OnInit {
           );
 
           if (planActualizado) {
-            console.log('Plan completado con éxito. Redirigiendo...');
-            this.router.navigate(['/felicitaciones']); // Redirige a la página de felicitaciones
+            console.log('Plan completado con éxito. Verificando grupo actual...');
+            const grupoActual = this.planesTrabajo.titulo; // Obtiene el grupo desde el plan de trabajo
+      
+            if (grupoActual === 'Relaciones Sociales') {
+              console.log(`Grupo actual: ${grupoActual}. Redirigiendo a /felicitaciones-final...`);
+              this.router.navigate(['/felicitaciones-final']); // Redirige a la página de felicitaciones final
+            } else {
+              console.log(`Grupo actual: ${grupoActual}. Redirigiendo a /felicitaciones...`);
+              this.router.navigate(['/felicitaciones']); // Redirige a la página de felicitaciones estándar
+            }
           } else {
             console.warn('No se pudo actualizar el plan como completado.');
           }

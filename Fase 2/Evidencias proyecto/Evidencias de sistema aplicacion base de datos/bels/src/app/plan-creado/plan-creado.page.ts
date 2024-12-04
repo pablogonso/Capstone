@@ -16,7 +16,7 @@ export class PlanCreadoPage implements OnInit{
 
   lanzarConfetti() {
     confetti({
-      particleCount: 350,
+      particleCount: 1000,
       spread: 150,
       origin: { y: 0.6 }, // Altura desde donde inicia el confetti
     });
