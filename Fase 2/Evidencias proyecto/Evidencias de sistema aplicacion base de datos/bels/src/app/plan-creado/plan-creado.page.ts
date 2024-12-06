@@ -23,6 +23,8 @@ export class PlanCreadoPage implements OnInit{
   }
   
   irAlInicio() {
-    this.router.navigate(['/pag-bienvenida']); // Redirige a la página de inicio
+    this.router.navigate(['/pag-bienvenida']).then(() => {
+      window.location.reload();
+    });
   }
 }

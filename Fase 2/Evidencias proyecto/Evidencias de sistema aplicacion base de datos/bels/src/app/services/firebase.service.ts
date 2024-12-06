@@ -11,7 +11,7 @@ export class FirebaseService {
   constructor(private firestore: AngularFirestore, private afAuth: AngularFireAuth) {}
 
   // Configuración del día de corte
-  private DIA_CORTE = 'Martes'; // Día configurable
+  private DIA_CORTE = 'Jueves'; // Día configurable
 
   // Método para obtener el ID de usuario logueado en Firebase
   async obtenerIdUsuarioDocumento(): Promise<string | null> {
