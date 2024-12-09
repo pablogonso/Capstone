@@ -70,7 +70,7 @@ export class InstruccionesPage {
 
   irAlHome() {
     this.router.navigate(['/pag-bienvenida']).then(() => {
-      // Recarga la página actual
+      
     });
   }
 }
