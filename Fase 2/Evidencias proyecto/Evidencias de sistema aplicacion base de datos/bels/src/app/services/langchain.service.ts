@@ -9,7 +9,7 @@ import axios from 'axios';
 export class LangchainService {
 
   // URL del backend Flask
-  private apiUrl = 'http://127.0.0.1:5000/api/generar-plan'; // Asegúrate de que esta URL sea correcta
+  private apiUrl = 'http://127.0.0.1:5000/api/generar-plan'; 
 
   constructor() { }
 
