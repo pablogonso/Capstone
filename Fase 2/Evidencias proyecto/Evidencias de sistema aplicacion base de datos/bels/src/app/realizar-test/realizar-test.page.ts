@@ -149,7 +149,7 @@ export class RealizarTestPage implements OnInit {
         return;
     }
 
-    // Verificación de puntuación perfecta (asumiendo que 4 es el puntaje máximo)
+   
     const puntajePerfecto = this.preguntas.every(pregunta => pregunta.valor === 4);
     
     if (puntajePerfecto) {
