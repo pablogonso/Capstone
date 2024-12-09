@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { NavController } from '@ionic/angular'; // Importa NavController
-import { AuthService } from '../services/auth.service'; // Importa tu servicio de autenticación
+import { AuthService } from '../services/auth.service'; 
 import { AngularFirestore } from '@angular/fire/compat/firestore'; // Para guardar los datos en Firestore
 
 @Component({
@@ -52,7 +52,7 @@ export class IngresarDatosPage {
       })
       .catch((error) => {
         console.error('Error al registrar el usuario en Firebase Authentication:', error);
-        // Puedes mostrar un mensaje de error aquí
+       
       });
   }
 }
