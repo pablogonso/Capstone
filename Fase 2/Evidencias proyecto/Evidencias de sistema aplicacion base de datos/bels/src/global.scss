@@ -45,11 +45,11 @@ body, ion-app, ion-content {
     background-size: cover;
     background-attachment: fixed; 
     background-position: center;
-    color: #ffffff; /* Cambia el color del texto si es necesario */
+    color: #ffffff; 
     font-family: 'Roboto', sans-serif;
   }
   
-/* Asegúrate de que el fondo de ion-content no sobrescriba */
+
 ion-content {
   --background: transparent;
   color: #ffffff; /* Ajusta el texto para que sea visible */
