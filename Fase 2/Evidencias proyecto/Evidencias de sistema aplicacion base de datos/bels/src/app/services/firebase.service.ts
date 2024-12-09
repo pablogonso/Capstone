@@ -178,7 +178,7 @@ obtenerDiaDeCorte(): string {
 
 
 
-  // Otros métodos (sin cambios)...
+
 
   // Método para guardar respuestas en Firebase usando un ID de respuesta único
   async guardarRespuestasGrupo(usuarioId: string, grupo: string, respuestasArray: any[]) {
